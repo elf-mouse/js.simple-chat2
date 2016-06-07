@@ -1,0 +1,88 @@
+@import 'vendor';
+@import 'reset';
+@import 'layout';
+.container {
+  width: 100%;
+  height: 600px;
+}
+
+#user-list {
+  li {
+    padding: 5px;
+    border-bottom: 1px dotted;
+    color: gray;
+    &.online {
+      color: black;
+    }
+  }
+}
+
+.message-section {
+  padding: 5px;
+}
+
+#history-message {
+  overflow: auto;
+  padding: 2px;
+  background-color: #fff;
+}
+
+#history-message img {
+  max-width: 99%;
+}
+
+#message {
+  width: 100%;
+  height: 80px;
+  resize: none;
+}
+
+.controls {
+  position: relative;
+  margin: 3px 0;
+}
+
+.items {
+  float: left;
+}
+
+#send {
+  float: right;
+}
+
+.image-label {
+  position: relative;
+}
+
+#image {
+  position: absolute;
+  top: 0;
+  left: 0;
+  overflow: hidden;
+  width: 52px;
+  opacity: 0;
+}
+
+#emoji-wrapper {
+  position: absolute;
+  bottom: 105px;
+  display: none;
+  width: 500px;
+  background-color: #aaa;
+  box-shadow: 0 0 10px #555;
+}
+
+#emoji-wrapper img {
+  width: 25px;
+  height: 25px;
+  margin: 2px;
+  padding: 2px;
+}
+
+#emoji-wrapper img:hover {
+  background-color: blue;
+}
+
+.emoji {
+  display: inline;
+}

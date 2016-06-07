@@ -1,0 +1,52 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Simple Chat II</title>
+  <link rel="stylesheet" href="css/mobile.css">
+  <script>
+  var userData = [{
+    id: 1,
+    username: '用户-甲'
+  }, {
+    id: 2,
+    username: '用户-乙'
+  }, {
+    id: 3,
+    username: '用户-丙'
+  }, {
+    id: 4,
+    username: '用户-丁'
+  }];
+  </script>
+</head>
+
+<body>
+  <div class="container flex-container flex-v">
+    <header class="flex-item flex-head">
+      <h1>此处省略头部</h1>
+      <select id="users">
+        <option value="用户-甲" selected>用户-甲</option>
+        <option value="用户-乙">用户-乙</option>
+        <option value="用户-丙">用户-丙</option>
+        <option value="用户-丁">用户-丁</option>
+      </select>
+      <button id="login" type="button">登录</button>
+      <button id="status" type="button">状态</button>
+    </header>
+    <div class="flex-item flex-body flex-container flex-v">
+      <div class="flex-item flex-body" id="history-message"></div>
+      <div class="flex-item flex-head input-section flex-container flex-h">
+        <input class="flex-item" id="message" type="text" placeholder="请输入消息">
+        <button class="flex-item" id="send" type="button">发送</button>
+      </div>
+    </div>
+  </div>
+  <input type="hidden" id="role" value="0">
+  <script src="//cdn.bootcss.com/socket.io/1.4.6/socket.io.min.js"></script>
+  <script src="js/mobile.js"></script>
+</body>
+
+</html>

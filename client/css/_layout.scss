@@ -1,0 +1,38 @@
+.flex-container {
+  display: flex;
+}
+
+.flex-h {
+  flex-direction: row;
+}
+
+.flex-v {
+  flex-direction: column;
+}
+
+.flex-item {
+  border: 1px solid;
+  .flex-item {
+    border-color: red;
+  }
+}
+
+.flex-v > .flex-head {
+  height: 44px;
+}
+
+.flex-v > .flex-head2 {
+  height: 120px;
+}
+
+.flex-h > .flex-head {
+  width: 44px;
+}
+
+.flex-h > .flex-head-p20 {
+  width: 20%;
+}
+
+.flex-body {
+  flex: 1 auto;
+}
