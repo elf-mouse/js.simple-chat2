@@ -1,2 +1,2 @@
-import './common/user-login';
-import './common/message';
+import './user/login';
+import './user/message';

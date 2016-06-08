@@ -1,8 +1,13 @@
-import { socket, showMessage, showImage } from './util';
+import { socket, showMessage, showImage } from '../util';
 
 document.getElementById('image').addEventListener('change', function() {
-  var username = document.getElementById('user-a').value;
-  var someone = document.getElementById('user-b').value;
+  if (!window.user) {
+    alert('未登录');
+    return false;
+  }
+
+  var sender = window.user;
+  var receiver = window.receiver;
 
   if (this.files.length !== 0) {
     var file = this.files[0];
@@ -16,8 +21,8 @@ document.getElementById('image').addEventListener('change', function() {
 
     reader.onload = function(e) {
       this.value = '';
-      socket.emit('image', someone, e.target.result);
-      showImage(username, e.target.result);
+      socket.emit('image', receiver, e.target.result);
+      showImage(sender.username, e.target.result);
     };
 
     reader.readAsDataURL(file);
@@ -25,6 +30,6 @@ document.getElementById('image').addEventListener('change', function() {
 }, false);
 
 // 接收图片
-socket.on('image', function(user, imgData) {
-  showImage(user, imgData);
+socket.on('image', function(sender, imgData) {
+  showImage(sender, imgData);
 });

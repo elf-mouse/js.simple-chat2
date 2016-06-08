@@ -7,7 +7,18 @@ var CONFIG = {
   imgPath: '../img'
 };
 
+var ROLE_TYPE = {
+  patient: 0,
+  nurse: 1
+};
+
+window.global = {
+  user: '',
+  receiver: ''
+};
+
 export {
   SERVER,
-  CONFIG
+  CONFIG,
+  ROLE_TYPE
 };

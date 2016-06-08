@@ -6,18 +6,6 @@
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <title>Simple Chat II</title>
   <link rel="stylesheet" href="css/web.css">
-  <script>
-  var userData = [{
-    id: 1,
-    username: '秘书-A'
-  }, {
-    id: 2,
-    username: '秘书-B'
-  }, {
-    id: 3,
-    username: '秘书-C'
-  }];
-  </script>
 </head>
 
 <body>
@@ -38,17 +26,17 @@
           <dt>国际门诊</dt>
           <dd>
             <ul id="user-list">
-              <li id="user-1">
-                <span>用户-甲</span>
+              <li class="user">
+                用户-甲
               </li>
-              <li id="user-2">
-                <span>用户-乙</span>
+              <li class="user">
+                用户-乙
               </li>
-              <li id="user-3">
-                <span>用户-丙</span>
+              <li class="user">
+                用户-丙
               </li>
-              <li id="user-4">
-                <span>用户-丁</span>
+              <li class="user">
+                用户-丁
               </li>
             </ul>
           </dd>
@@ -73,9 +61,7 @@
       </div>
     </div>
   </div>
-  <input type="hidden" id="role" value="1">
   <script src="//cdn.bootcss.com/socket.io/1.4.6/socket.io.min.js"></script>
-  <!-- <script src="//code.jquery.com/jquery-1.12.3.min.js"></script> -->
   <script src="js/web.js"></script>
 </body>
 

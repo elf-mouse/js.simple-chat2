@@ -8,9 +8,11 @@ function addUser(socket, user) {
   // socket.userId = user.id;
   socket.username = user.username;
   socket.role = user.role;
+  socket.binding = user.binding || ''; // 绑定关系
   socket.room = user.room;
   socket.join(user.room); // 分组
 
+  // for global
   users.push(user);
   usernameList.push(user.username);
   conns[user.username] = socket.id;
@@ -19,9 +21,11 @@ function addUser(socket, user) {
 }
 
 function clean(socket) {
-  if (typeof socket.userIndex !== 'undefined') { // important
-    console.info('clean');
+  console.info('clean');
 
+  console.log(typeof socket.userIndex);
+
+  if (typeof socket.userIndex !== 'undefined') { // important
     users.splice(socket.userIndex, 1);
     usernameList.splice(socket.userIndex, 1);
     delete conns[socket.username];
@@ -29,41 +33,55 @@ function clean(socket) {
   }
 }
 
-function toEmit(socket, type, someone, data) {
+function toEmit(socket, type, receiver, data) {
   console.info('toEmit');
 
-  var socketId = conns[someone] || null;
-  var username = socket.username;
+  var sender = socket.username;
 
-  if (socketId) {
-    if (username) {
-      io.sockets.connected[socketId].emit(type, username, data);
+  if (sender) { // sender已登录
+    var socketId;
+
+    switch (socket.role) {
+      case roleType.patient:
+        socketId = socket.binding ? conns[socket.binding.nurseName] : null;
+        break;
+      case roleType.nurse:
+        socketId = conns[receiver] || null;
+        break;
+    }
+
+    if (socketId) { // receiver在线
+      io.sockets.connected[socketId].emit(type, sender, data);
 
       var data = {
-        sender: username,
-        receiver: someone,
+        sender: sender,
+        receiver: receiver,
         type: chatType.message,
         content: data
       };
 
       switch (type) {
-        case 'image':
-          console.log('[sendImage]Received image: ' + username + ' to ' + someone + ' a pic');
+        case config.chats[chatType.image]: // image
+          console.log('[sendImage]Received image: ' + sender + ' to ' + receiver + ' a pic');
           data.type = chatType.image;
-          data.content = ''; // TODO: save image
+          data.content = 'this is a image'; // TODO: save image
           break;
         default: // message
-          console.log('[sendMessage]Received message: ' + username + ' to ' + someone + ' say ' + data);
+          console.log('[sendMessage]Received message: ' + sender + ' to ' + receiver + ' say ' + data);
           break;
       }
 
       // insert db
       // db.writeMessage(data);
-    } else {
-      console.log(username + ' unlogin');
+    } else { // receiver离线
+      console.log(receiver + ' is offline');
+
+      if (socket.role === roleType.patient) {
+        socket.to(config.roles[roleType.nurse]).emit(type, sender, data);
+      }
     }
   } else {
-    console.log(someone + ' offline');
+    console.log(sender + ' is unlogin');
   }
 }
 
@@ -75,7 +93,7 @@ function updateOnlineUser(socket, isOnline) {
     isOnline: isOnline
   };
 
-  socket.to(rooms[roleType.doctor]).emit('updateOnlineUser', user);
+  socket.to(config.roles[roleType.nurse]).emit('updateOnlineUser', user);
 }
 
 function getOnlineUser(socket) {

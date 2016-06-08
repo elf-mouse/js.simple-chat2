@@ -1,19 +1,15 @@
-import { socket } from './util';
+import { ROLE_TYPE as roleType } from '../config';
+import { socket, getUserInfo } from '../util';
 
 var username = '';
-var role = '';
+var user;
 
 // 测试（真实环境无需手动登录）
 document.getElementById('login').addEventListener('click', function() {
   console.log('before connect');
 
   username = document.getElementById('users').value;
-  role = document.getElementById('role').value;
-
-  var user = {
-    username: username,
-    role: role
-  };
+  user = getUserInfo(username, roleType.nurse);
 
   socket.emit('login', user); // 真实环境应进入页面时自动触发
 }, false);
@@ -33,6 +29,9 @@ socket.on('loginSuccess', function() {
   console.log(username + ' loginSuccess');
 
   document.getElementById('users').disabled = true;
+
+  global.user = user;
+  console.log(global.user);
 });
 
 // 更新在线状态
@@ -43,4 +42,14 @@ socket.on('updateOnlineUser', function(user) {
 // 获取在线状态
 socket.on('getOnlineUser', function(users) {
   console.log(users);
+});
+
+// 选择聊天用户（绑定操作优先走DB检查）
+[].forEach.call(document.querySelectorAll('.user'), function(el) {
+  el.addEventListener('click', function() {
+    // 绑定成功
+    var receiver = this.innerHTML.trim();
+    global.receiver = receiver;
+    console.log('当前聊天对象' + receiver);
+  }, false);
 });

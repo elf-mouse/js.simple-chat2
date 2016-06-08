@@ -16,20 +16,22 @@ var CHAT_TYPE = {
   message: 0, // 文字
   image: 1 // 图片
 };
+var CHATS = ['message', 'image'];
 
 var ROLE_TYPE = {
   patient: 0,
-  doctor: 1,
-  nurse: 2
+  nurse: 1
 };
+var ROLES = ['patient', 'nurse'];
 
-var ROOMS = ['patient', 'doctor', 'nurse']; // by ROLE_TYPE
 
 DB.auth = (DB.user && DB.pass) ? (DB.user + ':' + DB.pass + '@') : '';
+
 
 module.exports.debug = DEBUG;
 module.exports.server = SERVER;
 module.exports.db = DB;
 module.exports.chatType = CHAT_TYPE;
+module.exports.chats = CHATS;
 module.exports.roleType = ROLE_TYPE;
-module.exports.rooms = ROOMS;
+module.exports.roles = ROLES;

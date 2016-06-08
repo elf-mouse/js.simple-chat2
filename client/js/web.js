@@ -1,4 +1,4 @@
-import './common/admin-login';
-import './common/message';
-import './common/face';
-import './common/image';
+import './admin/login';
+import './admin/message';
+import './admin/face';
+import './admin/image';

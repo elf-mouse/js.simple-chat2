@@ -1,4 +1,9 @@
 document.getElementById('face').addEventListener('click', function(e) {
+  if (!window.user) {
+    alert('未登录');
+    return false;
+  }
+
   var emojiWrapper = document.getElementById('emoji-wrapper');
   emojiWrapper.style.display = 'block';
   e.stopPropagation();

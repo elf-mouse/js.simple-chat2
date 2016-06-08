@@ -1,12 +1,12 @@
 global.config = require('./server/config');
 global.db = require('./server/db');
 global.io = require('socket.io')(config.server.port);
-global.rooms = config.rooms;
 global.users = [];
 global.usernameList = []; // username list
 global.conns = {}; // username:socket object
 
 var util = require('./server/util');
+var chatType = config.chatType;
 var roleType = config.roleType;
 
 io.on('connection', function(socket) {
@@ -24,7 +24,7 @@ io.on('connection', function(socket) {
     } else {
       console.log('[Login][' + role + ']' + username + ' sign in');
 
-      user.room = rooms[role];
+      user.room = config.roles[role];
 
       util.addUser(socket, user);
 
@@ -32,7 +32,7 @@ io.on('connection', function(socket) {
         case roleType.patient:
           util.updateOnlineUser(socket, true); // online
           break;
-        case roleType.doctor:
+        case roleType.nurse:
           util.getOnlineUser(socket);
           break;
       }
@@ -53,14 +53,14 @@ io.on('connection', function(socket) {
 
   socket.on('status', function() {
     console.log('[Status]' + socket.id);
-    socket.emit('status', usernameList);
+    socket.emit('status', socket.username, usernameList);
   });
 
-  socket.on('message', function(someone, message) {
-    util.toEmit(socket, 'message', someone, message);
+  socket.on('message', function(receiver, message) {
+    util.toEmit(socket, config.chats[chatType.message], receiver, message);
   });
 
-  socket.on('image', function(someone, imgData) {
-    util.toEmit(socket, 'image', someone, imgData);
+  socket.on('image', function(receiver, imgData) {
+    util.toEmit(socket, config.chats[chatType.image], receiver, imgData);
   });
 });

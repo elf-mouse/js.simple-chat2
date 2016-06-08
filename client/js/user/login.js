@@ -1,19 +1,15 @@
-import { socket } from './util';
+import { ROLE_TYPE as roleType } from '../config';
+import { socket, getUserInfo } from '../util';
 
 var username = '';
-var role = '';
+var user;
 
 // 测试（真实环境无需手动登录）
 document.getElementById('login').addEventListener('click', function() {
   console.log('before connect');
 
   username = document.getElementById('users').value;
-  role = document.getElementById('role').value;
-
-  var user = {
-    username: username,
-    role: role
-  };
+  user = getUserInfo(username, roleType.patient);
 
   socket.emit('login', user); // 真实环境应进入页面时自动触发
 }, false);
@@ -33,4 +29,7 @@ socket.on('loginSuccess', function() {
   console.log(username + ' loginSuccess');
 
   document.getElementById('users').disabled = true;
+
+  global.user = user;
+  console.log(global.user);
 });
