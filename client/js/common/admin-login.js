@@ -35,7 +35,12 @@ socket.on('loginSuccess', function() {
   document.getElementById('users').disabled = true;
 });
 
-// 在线状态
-socket.on('onlineStatus', function(users) {
+// 更新在线状态
+socket.on('updateOnlineUser', function(user) {
+  console.log(user);
+});
+
+// 获取在线状态
+socket.on('getOnlineUser', function(users) {
   console.log(users);
 });

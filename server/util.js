@@ -67,6 +67,17 @@ function toEmit(socket, type, someone, data) {
   }
 }
 
+function updateOnlineUser(socket, isOnline) {
+  console.info('updateOnlineUser');
+
+  var user = {
+    username: socket.username,
+    isOnline: isOnline
+  };
+
+  socket.to(rooms[roleType.doctor]).emit('updateOnlineUser', user);
+}
+
 function getOnlineUser(socket) {
   console.info('getOnlineUser');
 
@@ -86,17 +97,11 @@ function getOnlineUser(socket) {
     console.log(onlineUsers);
   }
 
-  switch (socket.role) {
-    case roleType.patient:
-      socket.to(rooms[roleType.doctor]).emit('onlineStatus', onlineUsers);
-      break;
-    case roleType.doctor:
-      io.sockets.in(rooms[roleType.doctor]).emit('onlineStatus', onlineUsers);
-      break;
-  }
+  socket.emit('getOnlineUser', onlineUsers);
 }
 
 module.exports.addUser = addUser;
 module.exports.clean = clean;
 module.exports.toEmit = toEmit;
+module.exports.updateOnlineUser = updateOnlineUser;
 module.exports.getOnlineUser = getOnlineUser;
