@@ -1,5 +1,5 @@
 import { ROLE_TYPE as roleType } from '../config';
-import { socket, getUserInfo } from '../util';
+import { socket, getUserInfo, loadMessage } from '../util';
 
 var username = '';
 var user;
@@ -25,11 +25,11 @@ socket.on('userExisted', function() {
 });
 
 // 登录成功
-socket.on('loginSuccess', function() {
+socket.on('loginSuccess', function(data) {
   console.log(username + ' loginSuccess');
-
-  document.getElementById('users').disabled = true;
 
   global.user = user;
   console.log(global.user);
+
+  loadMessage(data);
 });

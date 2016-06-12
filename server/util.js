@@ -4,28 +4,38 @@ var roleType = config.roleType;
 function addUser(socket, user) {
   console.info('addUser');
 
+  var roleName = config.roles[user.role];
+  var model = config.model[roleName];
+
+  // for local
   socket.userIndex = usernameList.length;
-  // socket.userId = user.id;
-  socket.username = user.username;
-  socket.role = user.role;
-  socket.binding = user.binding || ''; // 绑定关系
-  socket.room = user.room;
-  socket.join(user.room); // 分组
+  for (var field in model) {
+    var key = (field === 'id') ? ('_' + field) : field; // important
+    var value = user[field];
+    socket[key] = value; // e.g. socket.username = user.username
+  }
+  socket.room = roleName;
+  socket.join(roleName); // 分组
 
   // for global
   users.push(user);
-  usernameList.push(user.username);
-  conns[user.username] = socket.id;
+  usernameList.push(socket.username);
+  conns[socket.username] = socket.id;
 
-  socket.emit('loginSuccess');
+  var data = db.readMessage(socket.username);
+  socket.emit('loginSuccess', data);
 }
 
 function clean(socket) {
   console.info('clean');
 
-  console.log(typeof socket.userIndex);
-
-  if (typeof socket.userIndex !== 'undefined') { // important
+  if (typeof socket.userIndex === 'undefined') { // important
+    if (config.debug) {
+      console.log(users);
+      console.log(usernameList);
+      console.log(conns);
+    }
+  } else {
     users.splice(socket.userIndex, 1);
     usernameList.splice(socket.userIndex, 1);
     delete conns[socket.username];
@@ -39,20 +49,36 @@ function toEmit(socket, type, receiver, data) {
   var sender = socket.username;
 
   if (sender) { // sender已登录
+    var canSave = true;
     var socketId;
+
+    if (typeof receiver !== 'string') {
+      canSave = false;
+      console.warn('[WARNING]receiver must be a string');
+    }
 
     switch (socket.role) {
       case roleType.patient:
-        socketId = socket.binding ? conns[socket.binding.nurseName] : null;
+        console.log('patient send a message');
+        socketId = socket.binding ? conns[socket.binding[config.model.patient.binding.username]] : null;
         break;
       case roleType.nurse:
+        console.log('nurse send a message');
         socketId = conns[receiver] || null;
         break;
     }
 
     if (socketId) { // receiver在线
       io.sockets.connected[socketId].emit(type, sender, data);
+    } else { // receiver离线
+      console.log('user is offline');
 
+      if (socket.role === roleType.patient) {
+        socket.to(config.roles[roleType.nurse]).emit(type, sender, data);
+      }
+    }
+
+    if (canSave) {
       var data = {
         sender: sender,
         receiver: receiver,
@@ -62,26 +88,19 @@ function toEmit(socket, type, receiver, data) {
 
       switch (type) {
         case config.chats[chatType.image]: // image
-          console.log('[sendImage]Received image: ' + sender + ' to ' + receiver + ' a pic');
+          console.log('[SendImage]Received image: ' + sender + ' to ' + receiver + ' a pic');
           data.type = chatType.image;
           data.content = 'this is a image'; // TODO: save image
           break;
         default: // message
-          console.log('[sendMessage]Received message: ' + sender + ' to ' + receiver + ' say ' + data);
+          console.log('[SendMessage]Received message: ' + sender + ' to ' + receiver + ' say ' + data);
           break;
       }
 
-      // insert db
-      // db.writeMessage(data);
-    } else { // receiver离线
-      console.log(receiver + ' is offline');
-
-      if (socket.role === roleType.patient) {
-        socket.to(config.roles[roleType.nurse]).emit(type, sender, data);
-      }
+      db.writeMessage(data); // insert db
     }
   } else {
-    console.log(sender + ' is unlogin');
+    console.log('user is unlogin');
   }
 }
 
@@ -92,6 +111,11 @@ function updateOnlineUser(socket, isOnline) {
     username: socket.username,
     isOnline: isOnline
   };
+
+  if (config.debug) {
+    // console.log(config.roles[roleType.nurse]);
+    console.log(user);
+  }
 
   socket.to(config.roles[roleType.nurse]).emit('updateOnlineUser', user);
 }
@@ -111,7 +135,7 @@ function getOnlineUser(socket) {
   }
 
   if (config.debug) {
-    console.log(socket.role);
+    // console.log(socket.role);
     console.log(onlineUsers);
   }
 

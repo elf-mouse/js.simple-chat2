@@ -1,3 +1,6 @@
+var MODEL = require('./model');
+// var PRIMARY_KEY = 'username';
+
 var DEBUG = true;
 
 var SERVER = {
@@ -35,3 +38,5 @@ module.exports.chatType = CHAT_TYPE;
 module.exports.chats = CHATS;
 module.exports.roleType = ROLE_TYPE;
 module.exports.roles = ROLES;
+module.exports.model = MODEL;
+// module.exports.pk = PRIMARY_KEY;

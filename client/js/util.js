@@ -38,6 +38,10 @@ function clearMessage() {
   document.getElementById('message').value = '';
 }
 
+function loadMessage(data) {
+
+}
+
 function showMessage(sender, msg) {
   var container = document.getElementById('history-message'),
     msgToDisplay = document.createElement('p'),
@@ -90,6 +94,7 @@ export {
   socket,
   showMessage,
   clearMessage,
+  loadMessage,
   showImage,
   showEmoji,
   getUserInfo

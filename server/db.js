@@ -14,16 +14,13 @@ var chatSchema = mongoose.Schema({
   receiver: String,
   type: Number,
   content: String,
-  date: {
+  created: {
     type: Date,
     default: Date.now
   }
 });
+
 var Chat = mongoose.model('Chat', chatSchema);
-
-function readMessage() {
-
-}
 
 function writeMessage(data) {
   var chat = new Chat(data);
@@ -33,10 +30,14 @@ function writeMessage(data) {
     if (err) {
       console.log(err);
     } else {
-      console.log('saved');
+      console.log('chat saved');
     }
   });
 }
 
-module.exports.readMessage = readMessage;
+function readMessage(username) {
+  console.log(username);
+}
+
 module.exports.writeMessage = writeMessage;
+module.exports.readMessage = readMessage;

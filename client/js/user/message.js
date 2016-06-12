@@ -14,7 +14,7 @@ document.getElementById('send').addEventListener('click', function() {
   }
 
   var sender = global.user;
-  var receiver = sender.binding || null;
+  var receiver = sender.binding ? sender.binding.nurseName : null;
   var message = document.getElementById('message').value;
 
   if (message.trim() === '') {

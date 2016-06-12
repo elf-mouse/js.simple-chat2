@@ -1,7 +1,7 @@
 global.config = require('./server/config');
 global.db = require('./server/db');
 global.io = require('socket.io')(config.server.port);
-global.users = [];
+global.users = []; // user data
 global.usernameList = []; // username list
 global.conns = {}; // username:socket object
 
@@ -23,8 +23,6 @@ io.on('connection', function(socket) {
       socket.emit('userExisted');
     } else {
       console.log('[Login][' + role + ']' + username + ' sign in');
-
-      user.room = config.roles[role];
 
       util.addUser(socket, user);
 
