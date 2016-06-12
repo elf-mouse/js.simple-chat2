@@ -9,6 +9,7 @@ db.once('open', function() {
   console.log('DB connected');
 });
 
+
 var chatSchema = mongoose.Schema({
   sender: String,
   receiver: String,
@@ -22,21 +23,38 @@ var chatSchema = mongoose.Schema({
 
 var Chat = mongoose.model('Chat', chatSchema);
 
+
 function writeMessage(data) {
   var chat = new Chat(data);
   console.log('before save chat', chat);
 
   chat.save(function(err) {
     if (err) {
-      console.log(err);
+      console.error('[DB]' + err);
     } else {
-      console.log('chat saved');
+      console.log('[DB]chat saved');
     }
   });
 }
 
-function readMessage(username) {
-  console.log(username);
+function readMessage(username, id, callback) {
+  id = id || 0;
+
+  var query = Chat.find({ '$or': [{ 'sender': username }, { 'receiver': username }] });
+
+  if (id) {
+    query.where('_id').lt(id);
+  }
+
+  query
+    .limit(config.db.options.limit)
+    .sort(config.db.options.sort)
+    .select(config.db.options.select)
+    .exec(function(err, data) {
+      if (!err) {
+        callback(data);
+      }
+    });
 }
 
 module.exports.writeMessage = writeMessage;

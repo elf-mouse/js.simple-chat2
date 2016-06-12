@@ -12,7 +12,13 @@ var DB = {
   pass: '',
   host: 'localhost',
   port: 27017,
-  name: 'test'
+  name: 'test',
+  // 查询聊天记录
+  options: {
+    select: 'sender receiver type content created',
+    sort: { created: -1 },
+    limit: 10
+  }
 };
 
 var CHAT_TYPE = {

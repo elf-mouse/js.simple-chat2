@@ -39,7 +39,7 @@ function clearMessage() {
 }
 
 function loadMessage(data) {
-
+  console.log(data);
 }
 
 function showMessage(sender, msg) {

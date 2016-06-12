@@ -22,8 +22,10 @@ function addUser(socket, user) {
   usernameList.push(socket.username);
   conns[socket.username] = socket.id;
 
-  var data = db.readMessage(socket.username);
-  socket.emit('loginSuccess', data);
+  // db select
+  db.readMessage(socket.username, null, function(data) {
+    socket.emit('loginSuccess', data);
+  });
 }
 
 function clean(socket) {
