@@ -37,13 +37,11 @@ function writeMessage(data) {
   });
 }
 
-function readMessage(username, id, callback) {
-  id = id || 0;
-
+function readMessage(username, lastId, callback) {
   var query = Chat.find({ '$or': [{ 'sender': username }, { 'receiver': username }] });
 
-  if (id) {
-    query.where('_id').lt(id);
+  if (lastId || false) {
+    query.where('_id').lt(lastId);
   }
 
   query
@@ -52,6 +50,7 @@ function readMessage(username, id, callback) {
     .select(config.db.options.select)
     .exec(function(err, data) {
       if (!err) {
+        // console.log(data);
         callback(data);
       }
     });

@@ -4,17 +4,15 @@
   "description": "Simple Chat II",
   "author": "Elf-mousE",
   "dependencies": {
-    "mongoose": "^4.4.19",
+    "mongoose": "^4.4.20",
     "socket.io": "^1.4.6"
   },
   "devDependencies": {
     "babel-preset-es2015": "^6.9.0",
     "balm": "^0.2.4",
-    "gulp": "^3.9.1",
-    "rollup": "^0.26.3"
+    "gulp": "^3.9.1"
   },
   "scripts": {
-    "start": "node server.js",
-    "build": "rollup -c"
+    "start": "node server.js"
   }
 }

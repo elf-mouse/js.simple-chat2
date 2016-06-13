@@ -1,6 +1,17 @@
 @import 'vendor';
 @import 'reset';
 @import 'layout';
+body {
+  font-family: Helvetica, Arial, sans-serif;
+}
+
+a,
+button,
+input,
+textarea {
+  -webkit-tap-highlight-color: rgba(0, 0, 0, 0);
+}
+
 select {
   border: 1px solid;
 }
@@ -14,6 +25,34 @@ html,
 body,
 .container {
   height: 100%;
+}
+
+#history-message {
+  visibility: hidden;
+  overflow: auto;
+  .receiver,
+  .sender {
+    margin-bottom: 10px;
+    padding: 10px;
+  }
+  img {
+    width: 44px;
+    height: 44px;
+  }
+  .time {
+    padding: 5px;
+    text-align: center;
+    color: white;
+    background: gray;
+  }
+  .receiver {
+    text-align: left;
+    border: 1px solid orange;
+  }
+  .sender {
+    text-align: right;
+    border: 1px solid green;
+  }
 }
 
 .input-section {

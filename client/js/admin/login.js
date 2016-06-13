@@ -1,5 +1,5 @@
 import { ROLE_TYPE as roleType } from '../config';
-import { socket, getUserInfo, loadMessage } from '../util';
+import { socket, getUserInfo, initMessage, loadMessage } from '../util';
 
 var username = '';
 var user;
@@ -28,9 +28,10 @@ socket.on('userExisted', function() {
 socket.on('loginSuccess', function(data) {
   console.log(username + ' loginSuccess');
 
-  global.user = user;
-  console.log(global.user);
+  window.user = user;
+  console.log(window.user);
 
+  initMessage();
   loadMessage(data);
 });
 
@@ -52,7 +53,7 @@ socket.on('getOnlineUser', function(users) {
 
     // 绑定成功
     var receiver = this.innerHTML.trim();
-    global.receiver = receiver;
+    window.receiver = receiver;
 
     console.log('当前聊天对象' + receiver);
   }, false);

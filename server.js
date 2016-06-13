@@ -61,4 +61,23 @@ io.on('connection', function(socket) {
   socket.on('image', function(receiver, imgData) {
     util.toEmit(socket, config.chats[chatType.image], receiver, imgData);
   });
+
+  socket.on('loadMessage', function() {
+    if (socket.canLoad) {
+      if (config.debug) {
+        console.info('loadMessage');
+        console.log('username:' + socket.username + ',lastId:' + socket.lastId);
+      }
+      if (socket.lastId) {
+        db.readMessage(socket.username, socket.lastId, function(data) {
+          util.setLastId(socket, data);
+          socket.emit('loadMessage', data);
+        });
+      } else {
+        socket.canLoad = false;
+      }
+    } else {
+      console.warn('no more message');
+    }
+  });
 });

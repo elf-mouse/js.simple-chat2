@@ -1,6 +1,10 @@
 @import 'vendor';
 @import 'reset';
 @import 'layout';
+body {
+  font-family: Arial, sans-serif;
+}
+
 .container {
   width: 100%;
   height: 600px;
@@ -9,8 +13,8 @@
 #user-list {
   li {
     padding: 5px;
-    border-bottom: 1px dotted;
     color: gray;
+    border-bottom: 1px dotted;
     &.online {
       color: black;
     }
@@ -22,9 +26,34 @@
 }
 
 #history-message {
+  visibility: hidden;
   overflow: auto;
+  max-height: 420px;
   padding: 2px;
   background-color: #fff;
+  .receiver,
+  .sender {
+    margin-bottom: 10px;
+    padding: 10px;
+  }
+  img {
+    width: 44px;
+    height: 44px;
+  }
+  .time {
+    padding: 5px;
+    text-align: center;
+    color: white;
+    background: gray;
+  }
+  .receiver {
+    text-align: left;
+    border: 1px solid orange;
+  }
+  .sender {
+    text-align: right;
+    border: 1px solid green;
+  }
 }
 
 #history-message img {

@@ -14,6 +14,7 @@ socket.on('system', function(name, count, type) {
   console.log('[' + type + '] 当前用户 ' + name + ' 当前人数 ' + count);
 });
 
+// 当前状态
 socket.on('status', function(current_user, users) {
   console.log('[Status]当前用户:' + current_user);
   console.log('[Status]在线人数:' + users.length);
@@ -24,6 +25,7 @@ document.getElementById('status').addEventListener('click', function() {
   socket.emit('status');
 }, false);
 
+// 显示图片
 function showImage(sender, imgData) {
   var container = document.getElementById('history-message'),
     msgToDisplay = document.createElement('p'),
@@ -34,14 +36,38 @@ function showImage(sender, imgData) {
   container.scrollTop = container.scrollHeight;
 }
 
+// 清空聊天输入框
 function clearMessage() {
   document.getElementById('message').value = '';
 }
 
-function loadMessage(data) {
-  console.log(data);
+// 聊天初始化
+function initMessage() {
+  window.historyMessageObj.scrollTop = window.originHeight;
+  window.historyMessageObj.style.visibility = 'visible';
 }
 
+// 加载历史聊天记录
+function loadMessage(data) {
+  console.log(data);
+
+  var tpl = `<p class="time">时间 xxxx-xx-xx</p><div class="receiver"><img src="http://tse3.mm.bing.net/th?id=OIP.Mc8c03e62f78cbcad0969763649b6f50fo0&w=146&h=147&c=7&rs=1&qlt=90&o=4&pid=1.1" alt="">aaa</div>
+<div class="sender">bbb<img src="http://tse2.mm.bing.net/th?id=OIP.M0ab2cc8b85c5cb4e16ebdec3109afb49o0&w=147&h=147&c=7&rs=1&qlt=90&o=4&pid=1.1" alt=""></div>
+<div class="receiver"><img src="http://tse3.mm.bing.net/th?id=OIP.Mc8c03e62f78cbcad0969763649b6f50fo0&w=146&h=147&c=7&rs=1&qlt=90&o=4&pid=1.1" alt="">ccc</div>
+<div class="sender">ddd<img src="http://tse2.mm.bing.net/th?id=OIP.M0ab2cc8b85c5cb4e16ebdec3109afb49o0&w=147&h=147&c=7&rs=1&qlt=90&o=4&pid=1.1" alt=""></div>
+<div class="receiver"><img src="http://tse3.mm.bing.net/th?id=OIP.Mc8c03e62f78cbcad0969763649b6f50fo0&w=146&h=147&c=7&rs=1&qlt=90&o=4&pid=1.1" alt="">eee</div>
+<div class="sender">fff<img src="http://tse2.mm.bing.net/th?id=OIP.M0ab2cc8b85c5cb4e16ebdec3109afb49o0&w=147&h=147&c=7&rs=1&qlt=90&o=4&pid=1.1" alt=""></div>
+<div class="receiver"><img src="http://tse3.mm.bing.net/th?id=OIP.Mc8c03e62f78cbcad0969763649b6f50fo0&w=146&h=147&c=7&rs=1&qlt=90&o=4&pid=1.1" alt="">gggg</div>
+<div class="sender">hhh<img src="http://tse2.mm.bing.net/th?id=OIP.M0ab2cc8b85c5cb4e16ebdec3109afb49o0&w=147&h=147&c=7&rs=1&qlt=90&o=4&pid=1.1" alt=""></div>
+`;
+
+  var output = createHTML(tpl);
+  window.historyMessageObj.insertBefore(output, window.historyMessageObj.firstChild);
+  window.historyMessageObj.scrollTop += (window.historyMessageObj.scrollHeight - window.originHeight);
+  window.originHeight = window.historyMessageObj.scrollHeight;
+}
+
+// 显示聊天
 function showMessage(sender, msg) {
   var container = document.getElementById('history-message'),
     msgToDisplay = document.createElement('p'),
@@ -53,6 +79,7 @@ function showMessage(sender, msg) {
   container.scrollTop = container.scrollHeight;
 }
 
+// 显示表情
 function showEmoji(msg) {
   var result = msg;
 
@@ -90,12 +117,25 @@ function getUserInfo(username, role) {
   return userInfo;
 }
 
+// 创建历史聊天记录模板
+function createHTML(htmlStr) {
+  var frag = document.createDocumentFragment(),
+    temp = document.createElement('div');
+  temp.innerHTML = htmlStr;
+  while (temp.firstChild) {
+    frag.appendChild(temp.firstChild);
+  }
+  return frag;
+}
+
 export {
   socket,
   showMessage,
   clearMessage,
+  initMessage,
   loadMessage,
   showImage,
   showEmoji,
-  getUserInfo
+  getUserInfo,
+  createHTML
 };

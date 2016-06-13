@@ -1,5 +1,5 @@
 var SERVER = {
-  host: '10.21.202.214',
+  host: '172.16.1.20',
   port: 3000
 };
 
@@ -12,10 +12,12 @@ var ROLE_TYPE = {
   nurse: 1
 };
 
-window.global = {
-  user: '',
-  receiver: ''
-};
+var historyMessageObj = document.getElementById('history-message');
+
+window.user = '';
+window.receiver = '';
+window.historyMessageObj = historyMessageObj;
+window.originHeight = historyMessageObj.scrollHeight;
 
 export {
   SERVER,

@@ -1,6 +1,17 @@
 var chatType = config.chatType;
 var roleType = config.roleType;
 
+function setLastId(socket, data) {
+  var lastMessage = data[data.length - 1];
+  if (config.debug) {
+    console.info('last id');
+    console.log(socket.lastId);
+    console.info('last message');
+    console.log(lastMessage);
+  }
+  socket.lastId = lastMessage ? lastMessage._id : 0;
+}
+
 function addUser(socket, user) {
   console.info('addUser');
 
@@ -14,6 +25,7 @@ function addUser(socket, user) {
     var value = user[field];
     socket[key] = value; // e.g. socket.username = user.username
   }
+  socket.canLoad = true; // for load message
   socket.room = roleName;
   socket.join(roleName); // 分组
 
@@ -24,6 +36,7 @@ function addUser(socket, user) {
 
   // db select
   db.readMessage(socket.username, null, function(data) {
+    setLastId(socket, data);
     socket.emit('loginSuccess', data);
   });
 }
@@ -33,10 +46,14 @@ function clean(socket) {
 
   if (typeof socket.userIndex === 'undefined') { // important
     if (config.debug) {
+      console.info('users');
       console.log(users);
+      console.info('username list');
       console.log(usernameList);
+      console.info('conns');
       console.log(conns);
     }
+    // TODO: has some bug?
   } else {
     users.splice(socket.userIndex, 1);
     usernameList.splice(socket.userIndex, 1);
@@ -144,6 +161,7 @@ function getOnlineUser(socket) {
   socket.emit('getOnlineUser', onlineUsers);
 }
 
+module.exports.setLastId = setLastId;
 module.exports.addUser = addUser;
 module.exports.clean = clean;
 module.exports.toEmit = toEmit;

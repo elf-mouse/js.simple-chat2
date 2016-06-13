@@ -8,13 +8,13 @@ function sendMessage(socket, sender, receiver, message) {
 }
 
 document.getElementById('send').addEventListener('click', function() {
-  if (!global.user) {
+  if (!window.user) {
     alert('未登录');
     return false;
   }
 
-  var sender = global.user;
-  var receiver = global.receiver;
+  var sender = window.user;
+  var receiver = window.receiver;
   var message = document.getElementById('message').value;
 
   if (!receiver) {
