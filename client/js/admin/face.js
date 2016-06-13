@@ -24,18 +24,3 @@ document.getElementById('emoji-wrapper').addEventListener('click', function(e) {
     messageInput.value = messageInput.value + '[emoji:' + target.title + ']';
   };
 }, false);
-
-function initEmoji() {
-  var emojiContainer = document.getElementById('emoji-wrapper');
-  var docFragment = document.createDocumentFragment();
-
-  for (var i = 69; i > 0; i--) {
-    var emojiItem = document.createElement('img');
-    emojiItem.src = '../img/emoji/' + i + '.gif';
-    emojiItem.title = i;
-    docFragment.appendChild(emojiItem);
-  }
-  emojiContainer.appendChild(docFragment);
-}
-
-initEmoji();

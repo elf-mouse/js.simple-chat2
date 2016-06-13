@@ -21,6 +21,23 @@ io.on('connection', function(socket) {
       console.log('[Login][' + role + ']' + username + ' is existed');
 
       socket.emit('userExisted');
+
+      // fix clean bug
+      if (!conns[username]) {
+        console.warn('[WARNING]bugfix');
+        for (var index in users) {
+          if (users[index].username === username) {
+            users.splice(index, 1);
+            break;
+          }
+        }
+        for (var index in usernameList) {
+          if (usernameList[index] === username) {
+            usernameList.splice(index, 1);
+            break;
+          }
+        }
+      }
     } else {
       console.log('[Login][' + role + ']' + username + ' sign in');
 

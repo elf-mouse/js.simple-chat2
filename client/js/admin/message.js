@@ -1,12 +1,7 @@
-import { ROLE_TYPE as roleType } from '../config';
-import { socket, showMessage, clearMessage } from '../util';
+import socket from '../common/socket';
+import { sendMessage } from '../common/util';
 
-function sendMessage(socket, sender, receiver, message) {
-  socket.emit('message', receiver, message);
-  showMessage(sender.username, message);
-  clearMessage();
-}
-
+// 发送消息
 document.getElementById('send').addEventListener('click', function() {
   if (!window.user) {
     alert('未登录');
@@ -28,9 +23,3 @@ document.getElementById('send').addEventListener('click', function() {
     sendMessage(socket, sender, receiver, message);
   }
 }, false);
-
-// 接收消息
-socket.on('message', function(sender, msg) {
-  console.log('成功接收消息');
-  showMessage(sender, msg);
-});

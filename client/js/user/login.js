@@ -1,5 +1,6 @@
 import { ROLE_TYPE as roleType } from '../config';
-import { socket, getUserInfo, initMessage, loadMessage } from '../util';
+import socket from '../common/socket';
+import { getUserInfo, initMessage, loadMessage } from '../common/util';
 
 var username = '';
 var user;

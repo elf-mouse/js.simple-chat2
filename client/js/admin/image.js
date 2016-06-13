@@ -1,4 +1,5 @@
-import { socket, showMessage, showImage } from '../util';
+import socket from '../common/socket';
+import { showMessage, showImage } from '../common/util';
 
 document.getElementById('image').addEventListener('change', function() {
   if (!window.user) {
@@ -28,8 +29,3 @@ document.getElementById('image').addEventListener('change', function() {
     reader.readAsDataURL(file);
   };
 }, false);
-
-// 接收图片
-socket.on('image', function(sender, imgData) {
-  showImage(sender, imgData);
-});

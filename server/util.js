@@ -98,7 +98,7 @@ function toEmit(socket, type, receiver, data) {
     }
 
     if (canSave) {
-      var data = {
+      var value = {
         sender: sender,
         receiver: receiver,
         type: chatType.message,
@@ -108,15 +108,15 @@ function toEmit(socket, type, receiver, data) {
       switch (type) {
         case config.chats[chatType.image]: // image
           console.log('[SendImage]Received image: ' + sender + ' to ' + receiver + ' a pic');
-          data.type = chatType.image;
-          data.content = 'this is a image'; // TODO: save image
+          value.type = chatType.image;
+          value.content = 'this is a image'; // TODO: save image
           break;
         default: // message
-          console.log('[SendMessage]Received message: ' + sender + ' to ' + receiver + ' say ' + data);
+          console.log('[SendMessage]Received message: ' + sender + ' to ' + receiver + ' say ' + value.content);
           break;
       }
 
-      db.writeMessage(data); // insert db
+      // db.writeMessage(value); // insert db
     }
   } else {
     console.log('user is unlogin');
