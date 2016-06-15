@@ -116,7 +116,7 @@ function toEmit(socket, type, receiver, data) {
           break;
       }
 
-      // db.writeMessage(value); // insert db
+      db.writeMessage(value); // insert db
     }
   } else {
     console.log('user is unlogin');
