@@ -23,7 +23,7 @@ document.getElementById('send').addEventListener('click', function() {
 // 加载消息
 var hammertime = new Hammer(window.historyMessageObj);
 hammertime.on('pan', function() {
-  if (window.historyMessageObj.scrollTop < 88) {
+  if (window.hasMessage && window.historyMessageObj.scrollTop < 88) {
     console.log('loading');
     socket.emit('loadMessage');
   }

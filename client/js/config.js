@@ -18,6 +18,7 @@ window.user = '';
 window.receiver = '';
 window.historyMessageObj = historyMessageObj;
 window.originHeight = historyMessageObj.scrollHeight;
+window.hasMessage = true;
 
 export {
   SERVER,

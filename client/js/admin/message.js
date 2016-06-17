@@ -23,3 +23,23 @@ document.getElementById('send').addEventListener('click', function() {
     sendMessage(socket, sender, receiver, message);
   }
 }, false);
+
+// 加载消息
+var lastKnownScrollPosition = 0;
+var ticking = false;
+
+window.historyMessageObj.addEventListener('scroll', function() {
+  lastKnownScrollPosition = this.scrollTop;
+  if (!ticking) {
+    window.requestAnimationFrame(function() {
+      if (lastKnownScrollPosition < 88) {
+        console.log('loading');
+        socket.emit('loadMessage');
+      }
+      if (window.hasMessage) {
+        ticking = false;
+      }
+    });
+  }
+  ticking = true;
+});

@@ -66,21 +66,27 @@ function initMessage() {
 
 // 加载历史聊天记录
 function loadMessage(data) {
-  var username = window.user.username; // 当前用户名
-
-  console.log(data);
-
-  var tpl = '<p class="time">时间 xxxx-xx-xx</p>';
-
-  for (var i = data.length - 1; i >= 0; i--) {
-    var msg = data[i];
-    tpl += createMessageTpl(msg.sender, showEmoji(msg.content));
+  if (!data.length) {
+    window.hasMessage = false;
   }
 
-  var output = createHTML(tpl);
-  window.historyMessageObj.insertBefore(output, window.historyMessageObj.firstChild);
-  window.historyMessageObj.scrollTop += (window.historyMessageObj.scrollHeight - window.originHeight);
-  window.originHeight = window.historyMessageObj.scrollHeight;
+  if (window.hasMessage) {
+    var username = window.user.username; // 当前用户名
+
+    console.log(data);
+
+    var tpl = '<p class="time">时间 xxxx-xx-xx</p>';
+
+    for (var i = data.length - 1; i >= 0; i--) {
+      var msg = data[i];
+      tpl += createMessageTpl(msg.sender, showEmoji(msg.content));
+    }
+
+    var output = createHTML(tpl);
+    window.historyMessageObj.insertBefore(output, window.historyMessageObj.firstChild);
+    window.historyMessageObj.scrollTop += (window.historyMessageObj.scrollHeight - window.originHeight);
+    window.originHeight = window.historyMessageObj.scrollHeight;
+  }
 }
 
 // 显示图片
