@@ -6,6 +6,16 @@ function clearMessage() {
   document.getElementById('message').value = '';
 }
 
+// 创建聊天模板
+function createMessageTpl(sender, content, time = '') {
+  var username = window.user.username; // 当前用户
+  var className = sender === username ? 'sender' : 'receiver';
+
+  var tpl = `<div class="${className}">${sender}<p>${content}</p></div>`;
+
+  return tpl;
+}
+
 // 显示表情
 function showEmoji(msg) {
   var result = msg;
@@ -36,7 +46,7 @@ function showMessage(sender, msg) {
     date = new Date().toTimeString().substr(0, 8),
     msg = showEmoji(msg); // determine whether the msg contains emoji
 
-  msgToDisplay.innerHTML = sender + '<span class="timespan">(' + date + '): </span>' + msg;
+  msgToDisplay.innerHTML = createMessageTpl(sender, msg);
   container.appendChild(msgToDisplay);
   container.scrollTop = container.scrollHeight;
 }
@@ -56,17 +66,16 @@ function initMessage() {
 
 // 加载历史聊天记录
 function loadMessage(data) {
+  var username = window.user.username; // 当前用户名
+
   console.log(data);
 
-  var tpl = `<p class="time">时间 xxxx-xx-xx</p><div class="receiver"><img src="http://tse3.mm.bing.net/th?id=OIP.Mc8c03e62f78cbcad0969763649b6f50fo0&w=146&h=147&c=7&rs=1&qlt=90&o=4&pid=1.1" alt="">aaa</div>
-<div class="sender">bbb<img src="http://tse2.mm.bing.net/th?id=OIP.M0ab2cc8b85c5cb4e16ebdec3109afb49o0&w=147&h=147&c=7&rs=1&qlt=90&o=4&pid=1.1" alt=""></div>
-<div class="receiver"><img src="http://tse3.mm.bing.net/th?id=OIP.Mc8c03e62f78cbcad0969763649b6f50fo0&w=146&h=147&c=7&rs=1&qlt=90&o=4&pid=1.1" alt="">ccc</div>
-<div class="sender">ddd<img src="http://tse2.mm.bing.net/th?id=OIP.M0ab2cc8b85c5cb4e16ebdec3109afb49o0&w=147&h=147&c=7&rs=1&qlt=90&o=4&pid=1.1" alt=""></div>
-<div class="receiver"><img src="http://tse3.mm.bing.net/th?id=OIP.Mc8c03e62f78cbcad0969763649b6f50fo0&w=146&h=147&c=7&rs=1&qlt=90&o=4&pid=1.1" alt="">eee</div>
-<div class="sender">fff<img src="http://tse2.mm.bing.net/th?id=OIP.M0ab2cc8b85c5cb4e16ebdec3109afb49o0&w=147&h=147&c=7&rs=1&qlt=90&o=4&pid=1.1" alt=""></div>
-<div class="receiver"><img src="http://tse3.mm.bing.net/th?id=OIP.Mc8c03e62f78cbcad0969763649b6f50fo0&w=146&h=147&c=7&rs=1&qlt=90&o=4&pid=1.1" alt="">gggg</div>
-<div class="sender">hhh<img src="http://tse2.mm.bing.net/th?id=OIP.M0ab2cc8b85c5cb4e16ebdec3109afb49o0&w=147&h=147&c=7&rs=1&qlt=90&o=4&pid=1.1" alt=""></div>
-`;
+  var tpl = '<p class="time">时间 xxxx-xx-xx</p>';
+
+  for (var i = data.length - 1; i >= 0; i--) {
+    var msg = data[i];
+    tpl += createMessageTpl(msg.sender, showEmoji(msg.content));
+  }
 
   var output = createHTML(tpl);
   window.historyMessageObj.insertBefore(output, window.historyMessageObj.firstChild);
@@ -80,7 +89,7 @@ function showImage(sender, imgData) {
     msgToDisplay = document.createElement('p'),
     date = new Date().toTimeString().substr(0, 8);
 
-  msgToDisplay.innerHTML = sender + '<span class="timespan">(' + date + '): </span><br>' + '<a href="' + imgData + '" target="_blank"><img src="' + imgData + '"></a>';
+  msgToDisplay.innerHTML = createMessageTpl(sender, '<img src="' + imgData + '">');
   container.appendChild(msgToDisplay);
   container.scrollTop = container.scrollHeight;
 }
