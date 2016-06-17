@@ -3,13 +3,13 @@ var balm = require('balm');
 balm.config = {
   static: true,
   roots: {
-    app: 'client'
+    source: 'client'
   },
   paths: {
-    app: {
-      css: '/css',
-      js: '/js',
-      img: '/img'
+    source: {
+      css: 'css',
+      js: 'js',
+      img: 'img'
     }
   },
   scripts: {
