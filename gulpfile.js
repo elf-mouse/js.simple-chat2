@@ -20,4 +20,8 @@ balm.config = {
   }
 };
 
-balm.go();
+balm.go(function(mix) {
+  if (balm.config.production) {
+    mix.zip();
+  }
+});
