@@ -4,10 +4,7 @@
   "dependencies": {
     "normalize-css": "normalize.css#^4.1.1",
     "bourbon": "^4.2.7",
-    "neat": "^1.7.4"
-  },
-  "devDependencies": {
-    "hammerjs": "^2.0.8",
-    "fastclick": "^1.0.6"
+    "neat": "^1.7.4",
+    "hammerjs": "^2.0.8"
   }
 }
