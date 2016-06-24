@@ -1,27 +1,31 @@
+var model = require('./model');
+
 var chatType = config.chatType;
 var roleType = config.roleType;
+var userModel = model.user;
 
 function setLastId(socket, data) {
-  var lastMessage = data[data.length - 1];
-  if (config.debug) {
-    console.info('last id');
-    console.log(socket.lastId);
-    console.info('last message');
-    console.log(lastMessage);
+  if (data.length) {
+    var lastMessage = data[data.length - 1];
+    if (config.debug) {
+      console.info('last id');
+      console.log(socket.lastId);
+      console.info('last message');
+      console.log(lastMessage);
+    }
+    socket.lastId = lastMessage ? lastMessage._id : 0;
   }
-  socket.lastId = lastMessage ? lastMessage._id : 0;
 }
 
 function addUser(socket, user) {
   console.info('addUser');
 
   var roleName = config.roles[user.role];
-  var model = config.model[roleName];
 
   // for local
-  socket.userIndex = usernameList.length;
-  for (var field in model) {
-    var key = (field === 'id') ? ('_' + field) : field; // important
+  socket.userIndex = userIds.length;
+  for (var field in userModel) {
+    var key = (field === 'id') ? userModel[field] : field;
     var value = user[field];
     socket[key] = value; // e.g. socket.username = user.username
   }
@@ -30,12 +34,13 @@ function addUser(socket, user) {
   socket.join(roleName); // 分组
 
   // for global
-  users.push(user);
-  usernameList.push(socket.username);
-  conns[socket.username] = socket.id;
+  users.push(user); // origin user data
+  var userId = socket[config.pk];
+  userIds.push(userId); // new user id
+  conns[userId] = socket.id;
 
   // db select
-  db.readMessage(socket.username, null, function(data) {
+  db.readMessage(userId, null, function(data) {
     setLastId(socket, data);
     socket.emit('loginSuccess', data);
   });
@@ -48,42 +53,80 @@ function clean(socket) {
     if (config.debug) {
       console.info('users');
       console.log(users);
-      console.info('username list');
-      console.log(usernameList);
+      console.info('userIds');
+      console.log(userIds);
       console.info('conns');
       console.log(conns);
     }
     // TODO: has some bug?
   } else {
     users.splice(socket.userIndex, 1);
-    usernameList.splice(socket.userIndex, 1);
-    delete conns[socket.username];
+    userIds.splice(socket.userIndex, 1);
+    delete conns[socket[config.pk]];
     socket.leave(socket.room);
   }
 }
 
-function toEmit(socket, type, receiver, data) {
+function getReceiverById(senderId, receiverId) {
+  var username = '';
+
+  console.info('getReceiverById:' + senderId + '->' + receiverId);
+
+  for (var user of users) {
+    console.log(user);
+    if (user.id == receiverId) {
+      username = user[userModel.username];
+      break;
+    }
+
+    if (user.id == senderId) {
+      switch (user[userModel.role]) {
+        case roleType.patient:
+          if (user.binding[userModel.binding.id] == receiverId) {
+            username = user.binding[userModel.binding.username];
+          }
+          break;
+        case roleType.nurse:
+          for (var binding of user.binding) {
+            if (binding[userModel.binding.id] == receiverId) {
+              username = binding[userModel.binding.username];
+            }
+          }
+          break;
+      }
+      if (username) {
+        break;
+      }
+    }
+  }
+
+  return username;
+}
+
+function toEmit(socket, type, receiverId, data) {
   console.info('toEmit');
 
+  var senderId = socket[config.pk];
   var sender = socket.username;
 
-  if (sender) { // sender已登录
+  if (senderId) { // sender已登录
     var canSave = true;
     var socketId;
+    var receiver = getReceiverById(senderId, receiverId);
 
-    if (typeof receiver !== 'string') {
+    if (!receiver) {
       canSave = false;
-      console.warn('[WARNING]receiver must be a string');
+      console.warn('[WARNING]no receiver be found');
     }
 
     switch (socket.role) {
       case roleType.patient:
         console.log('patient send a message');
-        socketId = socket.binding ? conns[socket.binding[config.model.patient.binding.username]] : null;
+        socketId = socket.binding && socket.binding.id ? conns[socket.binding.id] : null;
         break;
       case roleType.nurse:
         console.log('nurse send a message');
-        socketId = conns[receiver] || null;
+        socketId = conns[receiverId] || null;
         break;
     }
 
@@ -99,20 +142,20 @@ function toEmit(socket, type, receiver, data) {
 
     if (canSave) {
       var value = {
-        sender: sender,
-        receiver: receiver,
+        sender: senderId,
+        receiver: receiverId,
         type: chatType.message,
         content: data
       };
 
       switch (type) {
         case config.chats[chatType.image]: // image
-          console.log('[SendImage]Received image: ' + sender + ' to ' + receiver + ' a pic');
+          console.log('[SendImage]Received image: ' + senderId + ':' + sender + ' to ' + receiverId + ':' + receiver + ' a pic');
           value.type = chatType.image;
           value.content = 'this is a image'; // TODO: save image
           break;
         default: // message
-          console.log('[SendMessage]Received message: ' + sender + ' to ' + receiver + ' say ' + value.content);
+          console.log('[SendMessage]Received message: ' + senderId + ':' + sender + ' to ' + receiverId + ':' + receiver + ' say ' + value.content);
           break;
       }
 
@@ -127,6 +170,7 @@ function updateOnlineUser(socket, isOnline) {
   console.info('updateOnlineUser');
 
   var user = {
+    id: socket[config.pk],
     username: socket.username,
     isOnline: isOnline
   };

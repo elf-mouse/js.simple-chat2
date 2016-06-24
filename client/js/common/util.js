@@ -8,8 +8,8 @@ function clearMessage() {
 
 // 创建聊天模板
 function createMessageTpl(sender, content, time = '') {
-  var username = window.user.username; // 当前用户
-  var className = sender === username ? 'sender' : 'receiver';
+  var userId = window.user.id; // 当前用户
+  var className = sender === userId ? 'sender' : 'receiver';
 
   var tpl = `<div class="${className}">${sender}<p>${content}</p></div>`;
 
@@ -52,8 +52,8 @@ function showMessage(sender, msg) {
 }
 
 // 发送消息
-function sendMessage(socket, sender, receiver, message) {
-  socket.emit('message', receiver, message);
+function sendMessage(socket, sender, receiverId, message) {
+  socket.emit('message', receiverId, message);
   showMessage(sender.username, message);
   clearMessage();
 }
@@ -101,12 +101,12 @@ function showImage(sender, imgData) {
 }
 
 // 模拟获取用户信息
-function getUserInfo(username, role) {
-  var userInfo = '';
+function getUserInfo(userId, role) {
+  var userInfo = {};
   var list = role === 1 ? data.nurse : data.patient;
 
   for (var user of list) {
-    if (user.username === username) {
+    if (user.id == userId) {
       userInfo = user;
     }
   }

@@ -1,24 +1,27 @@
-var patient = {
-  id: 'id',
-  username: 'username',
-  role: 'role',
-  binding: {
-    id: 'nurseId',
-    username: 'nurseName'
-  }
-};
+// var patient = {
+//   id: Number,
+//   username: String,
+//   role: Number,
+//   binding: Number
+// };
 
-var nurse = {
-  id: 'id',
+// var nurse = {
+//   id: Number,
+//   username: String,
+//   role: Number,
+//   binding: Array
+// };
+
+var user = {
+  id: config.pk,
   username: 'username',
   role: 'role',
   binding: {
-    id: 'patientId',
-    username: 'patientName'
+    id: 'id',
+    username: 'username'
   }
 };
 
 module.exports = {
-  patient: patient,
-  nurse: nurse
+  user: user
 };

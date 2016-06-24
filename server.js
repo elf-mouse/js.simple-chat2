@@ -1,9 +1,9 @@
 global.config = require('./server/config');
-global.db = require('./server/db');
+global.db = require('./server/db/chat');
 global.io = require('socket.io')(config.server.port);
 global.users = []; // user data
-global.usernameList = []; // username list
-global.conns = {}; // username:socket object
+global.userIds = []; // userId list
+global.conns = {}; // userId:socketId object
 
 var util = require('./server/util');
 var chatType = config.chatType;
@@ -15,31 +15,32 @@ io.on('connection', function(socket) {
   socket.on('login', function(user) { // user: json object
     user.role = +user.role; // important
     var role = user.role;
+    var userId = user.id;
     var username = user.username;
 
-    if (usernameList.indexOf(username) > -1) {
-      console.log('[Login][' + role + ']' + username + ' is existed');
+    if (userIds.indexOf(userId) > -1) {
+      console.log('[Login][' + role + ']' + userId + ':' + username + ' is existed');
 
       socket.emit('userExisted');
 
       // fix clean bug
-      if (!conns[username]) {
+      if (!conns[userId]) {
         console.warn('[WARNING]bugfix');
         for (var index in users) {
-          if (users[index].username === username) {
+          if (users[index][config.pk] === userId) {
             users.splice(index, 1);
             break;
           }
         }
-        for (var index in usernameList) {
-          if (usernameList[index] === username) {
-            usernameList.splice(index, 1);
+        for (var index in userIds) {
+          if (userIds[index] === userId) {
+            userIds.splice(index, 1);
             break;
           }
         }
       }
     } else {
-      console.log('[Login][' + role + ']' + username + ' sign in');
+      console.log('[Login][' + role + ']' + userId + ':' + username + ' sign in');
 
       util.addUser(socket, user);
 
@@ -63,20 +64,20 @@ io.on('connection', function(socket) {
       util.updateOnlineUser(socket, false); // offline
     }
 
-    // socket.broadcast.emit('system', socket.username, usernameList.length, 'disconnect');
+    // socket.broadcast.emit('system', socket.username, userIds.length, 'disconnect');
   });
 
   socket.on('status', function() {
     console.log('[Status]' + socket.id);
-    socket.emit('status', socket.username, usernameList);
+    socket.emit('status', socket[config.pk] + ':' + socket.username, userIds);
   });
 
-  socket.on('message', function(receiver, message) {
-    util.toEmit(socket, config.chats[chatType.message], receiver, message);
+  socket.on('message', function(receiverId, message) {
+    util.toEmit(socket, config.chats[chatType.message], receiverId, message);
   });
 
-  socket.on('image', function(receiver, imgData) {
-    util.toEmit(socket, config.chats[chatType.image], receiver, imgData);
+  socket.on('image', function(receiverId, imgData) {
+    util.toEmit(socket, config.chats[chatType.image], receiverId, imgData);
   });
 
   socket.on('loadMessage', function() {
@@ -86,7 +87,7 @@ io.on('connection', function(socket) {
         console.log('username:' + socket.username + ',lastId:' + socket.lastId);
       }
       if (socket.lastId) {
-        db.readMessage(socket.username, socket.lastId, function(data) {
+        db.readMessage(socket.id, socket.lastId, function(data) {
           util.setLastId(socket, data);
           socket.emit('loadMessage', data);
         });
@@ -97,4 +98,10 @@ io.on('connection', function(socket) {
       console.warn('no more message');
     }
   });
+
+  socket.on('callForwarding', function(fromId, toId) {
+    console.info('[Call Forwarding]' + fromId + ':' + toId);
+    util.callForwarding(fromId, toId);
+  });
+
 });

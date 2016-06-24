@@ -8,7 +8,7 @@ document.getElementById('image').addEventListener('change', function() {
   }
 
   var sender = window.user;
-  var receiver = window.receiver;
+  var receiverId = window.receiverId;
 
   if (this.files.length !== 0) {
     var file = this.files[0];
@@ -22,7 +22,7 @@ document.getElementById('image').addEventListener('change', function() {
 
     reader.onload = function(e) {
       this.value = '';
-      socket.emit('image', receiver, e.target.result);
+      socket.emit('image', receiverId, e.target.result);
       showImage(sender.username, e.target.result);
     };
 

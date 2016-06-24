@@ -10,13 +10,13 @@ document.getElementById('send').addEventListener('click', function() {
   }
 
   var sender = window.user;
-  var receiver = sender.binding ? sender.binding.nurseName : null;
+  var receiverId = sender.binding.id || null;
   var message = document.getElementById('message').value;
 
   if (message.trim() === '') {
     console.log('消息不能为空');
   } else {
-    sendMessage(socket, sender, receiver, message);
+    sendMessage(socket, sender, receiverId, message);
   }
 }, false);
 
