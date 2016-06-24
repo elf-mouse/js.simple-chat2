@@ -70,32 +70,33 @@ function clean(socket) {
 function getReceiverById(senderId, receiverId) {
   var username = '';
 
-  console.info('getReceiverById:' + senderId + '->' + receiverId);
+  if (receiverId) {
+    console.info('getReceiverById:' + senderId + '->' + receiverId);
 
-  for (var user of users) {
-    console.log(user);
-    if (user.id == receiverId) {
-      username = user[userModel.username];
-      break;
-    }
-
-    if (user.id == senderId) {
-      switch (user[userModel.role]) {
-        case roleType.patient:
-          if (user.binding[userModel.binding.id] == receiverId) {
-            username = user.binding[userModel.binding.username];
-          }
-          break;
-        case roleType.nurse:
-          for (var binding of user.binding) {
-            if (binding[userModel.binding.id] == receiverId) {
-              username = binding[userModel.binding.username];
-            }
-          }
-          break;
-      }
-      if (username) {
+    for (var user of users) {
+      if (user.id == receiverId) {
+        username = user[userModel.username];
         break;
+      }
+
+      if (user.id == senderId) {
+        switch (user[userModel.role]) {
+          case roleType.patient:
+            if (user.binding[userModel.binding.id] == receiverId) {
+              username = user.binding[userModel.binding.username];
+            }
+            break;
+          case roleType.nurse:
+            for (var binding of user.binding) {
+              if (binding[userModel.binding.id] == receiverId) {
+                username = binding[userModel.binding.username];
+              }
+            }
+            break;
+        }
+        if (username) {
+          break;
+        }
       }
     }
   }
@@ -110,12 +111,10 @@ function toEmit(socket, type, receiverId, data) {
   var sender = socket.username;
 
   if (senderId) { // sender已登录
-    var canSave = true;
     var socketId;
     var receiver = getReceiverById(senderId, receiverId);
 
     if (!receiver) {
-      canSave = false;
       console.warn('[WARNING]no receiver be found');
     }
 
@@ -140,27 +139,25 @@ function toEmit(socket, type, receiverId, data) {
       }
     }
 
-    if (canSave) {
-      var value = {
-        sender: senderId,
-        receiver: receiverId,
-        type: chatType.message,
-        content: data
-      };
+    var value = {
+      sender: senderId,
+      receiver: receiverId,
+      type: chatType.message,
+      content: data
+    };
 
-      switch (type) {
-        case config.chats[chatType.image]: // image
-          console.log('[SendImage]Received image: ' + senderId + ':' + sender + ' to ' + receiverId + ':' + receiver + ' a pic');
-          value.type = chatType.image;
-          value.content = 'this is a image'; // TODO: save image
-          break;
-        default: // message
-          console.log('[SendMessage]Received message: ' + senderId + ':' + sender + ' to ' + receiverId + ':' + receiver + ' say ' + value.content);
-          break;
-      }
-
-      db.writeMessage(value); // insert db
+    switch (type) {
+      case config.chats[chatType.image]: // image
+        console.log('[SendImage]Received image: ' + senderId + ':' + sender + ' to ' + receiverId + ':' + receiver + ' a pic');
+        value.type = chatType.image;
+        value.content = 'this is a image'; // TODO: save image
+        break;
+      default: // message
+        console.log('[SendMessage]Received message: ' + senderId + ':' + sender + ' to ' + receiverId + ':' + receiver + ' say ' + value.content);
+        break;
     }
+
+    db.writeMessage(value); // insert db
   } else {
     console.log('user is unlogin');
   }
@@ -205,9 +202,19 @@ function getOnlineUser(socket) {
   socket.emit('getOnlineUser', onlineUsers);
 }
 
+function call(patientId, nurseId) {
+  db.updateMessage(patientId, nurseId);
+}
+
+function callForwarding(userId, fromId, toId) {
+
+}
+
 module.exports.setLastId = setLastId;
 module.exports.addUser = addUser;
 module.exports.clean = clean;
 module.exports.toEmit = toEmit;
 module.exports.updateOnlineUser = updateOnlineUser;
 module.exports.getOnlineUser = getOnlineUser;
+module.exports.call = call;
+module.exports.callForwarding = callForwarding;

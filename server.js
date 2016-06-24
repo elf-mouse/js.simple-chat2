@@ -99,9 +99,16 @@ io.on('connection', function(socket) {
     }
   });
 
-  socket.on('callForwarding', function(fromId, toId) {
-    console.info('[Call Forwarding]' + fromId + ':' + toId);
-    util.callForwarding(fromId, toId);
+  socket.on('call', function(patientId) {
+    var nurseId = socket[config.pk];
+    console.info('[Call]' + patientId + ':' + nurseId);
+    util.call(patientId, nurseId);
+  });
+
+  socket.on('callForwarding', function(userId, toId) {
+    var fromId = socket[config.pk];
+    console.info('[Call Forwarding]' + userId + ':' + fromId + '->' + toId);
+    util.callForwarding(userId, fromId, toId);
   });
 
 });

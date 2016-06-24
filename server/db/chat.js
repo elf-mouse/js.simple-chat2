@@ -19,7 +19,7 @@ function writeMessage(data) {
 
 function readMessage(userId, lastId, callback) {
   var options = config.db.queryOptions.chat;
-  var query = Chat.find({ '$or': [{ 'sender': userId }, { 'receiver': userId }] });
+  var query = Chat.find({ $or: [{ sender: userId }, { receiver: userId }] });
 
   if (lastId || false) {
     query.where('_id').lt(lastId);
@@ -39,5 +39,14 @@ function readMessage(userId, lastId, callback) {
     });
 }
 
+function updateMessage(patientId, nurseId) {
+  var conditions = { $and: [{ sender: patientId }, { receiver: 0 }] };
+  var update = { $set: { receiver: nurseId } };
+  var options = { multi: true };
+
+  Chat.update(conditions, update, options);
+}
+
 module.exports.writeMessage = writeMessage;
 module.exports.readMessage = readMessage;
+module.exports.updateMessage = updateMessage;

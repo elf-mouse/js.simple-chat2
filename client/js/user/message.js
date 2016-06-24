@@ -10,7 +10,7 @@ document.getElementById('send').addEventListener('click', function() {
   }
 
   var sender = window.user;
-  var receiverId = sender.binding.id || null;
+  var receiverId = sender.binding.id || 0;
   var message = document.getElementById('message').value;
 
   if (message.trim() === '') {
