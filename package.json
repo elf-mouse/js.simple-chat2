@@ -8,7 +8,7 @@
     "socket.io": "^1.4.6"
   },
   "devDependencies": {
-    "balm": "^0.4.2",
+    "balm": "^0.4.4",
     "gulp": "^3.9.1"
   },
   "scripts": {
