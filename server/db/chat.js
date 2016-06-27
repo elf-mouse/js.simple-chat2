@@ -38,7 +38,17 @@ function readMessage(userId, lastId, callback) {
         console.error('[DB]' + err);
         callback([]);
       } else {
-        callback(data);
+        var result = [];
+        for (var item of data) {
+          var value = {
+            sender: item.sender,
+            receiver: item.receiver,
+            type: item.type,
+            content: item.content,
+            created: new Date(item.created).getTime()
+          };
+        }
+        callback(result);
       }
     });
 }
