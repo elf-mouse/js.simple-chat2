@@ -1,9 +1,9 @@
 global.config = require('./server/config');
 global.db = require('./server/db/chat');
 global.io = require('socket.io')(config.server.port);
-global.users = []; // user data
-global.userIds = []; // userId list
-global.conns = {}; // userId:socketId object
+global.users = []; // 用户数据
+global.userIds = []; // 用户ID列表
+global.conns = {}; // 连接集合{userId:socketId}
 
 var util = require('./server/util');
 var chatType = config.chatType;
@@ -12,6 +12,9 @@ var roleType = config.roleType;
 io.on('connection', function(socket) {
   console.log('[Connection]Connection ' + socket.id + ' accepted.');
 
+  /**
+   * 登录
+   */
   socket.on('login', function(user) { // user: json object
     user.role = +user.role; // important
     var role = user.role;
@@ -55,6 +58,9 @@ io.on('connection', function(socket) {
     }
   });
 
+  /**
+   * 离线
+   */
   socket.on('disconnect', function() {
     console.log('[Disconnect]Connection ' + socket.id + ' terminated.');
 
@@ -63,23 +69,33 @@ io.on('connection', function(socket) {
     if (socket.role === roleType.patient) {
       util.updateOnlineUser(socket, false); // offline
     }
-
-    // socket.broadcast.emit('system', socket.username, userIds.length, 'disconnect');
   });
 
+  /**
+   * 获取当前状态
+   */
   socket.on('status', function() {
     console.log('[Status]' + socket.id);
     socket.emit('status', socket[config.pk] + ':' + socket.username, userIds);
   });
 
+  /**
+   * 发消息
+   */
   socket.on('message', function(receiverId, message) {
     util.toEmit(socket, config.chats[chatType.message], receiverId, message);
   });
 
+  /**
+   * 发图片
+   */
   socket.on('image', function(receiverId, imgData) {
     util.toEmit(socket, config.chats[chatType.image], receiverId, imgData);
   });
 
+  /**
+   * 加载更多消息
+   */
   socket.on('loadMessage', function() {
     if (socket.canLoad) {
       if (config.debug) {
@@ -99,12 +115,18 @@ io.on('connection', function(socket) {
     }
   });
 
-  socket.on('call', function(patientId) {
+  /**
+   * 绑定用户
+   */
+  socket.on('call', function(patient) {
     var nurseId = socket[config.pk];
-    console.info('[Call]' + patientId + ':' + nurseId);
-    util.call(patientId, nurseId);
+    console.info('[Call]' + nurseId + '<=>' + patient.id);
+    util.call(socket, patient);
   });
 
+  /**
+   * 转接
+   */
   socket.on('callForwarding', function(userId, toId) {
     var fromId = socket[config.pk];
     console.info('[Call Forwarding]' + userId + ':' + fromId + '->' + toId);

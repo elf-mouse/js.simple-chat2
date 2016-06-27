@@ -9,15 +9,7 @@ var DB = {
   pass: '',
   host: 'localhost',
   port: 27017,
-  name: 'test',
-  // 查询聊天记录
-  queryOptions: {
-    chat: {
-      select: 'sender receiver type content created',
-      sort: { created: -1 },
-      limit: 10
-    }
-  }
+  name: 'test'
 };
 
 DB.auth = (DB.user && DB.pass) ? (DB.user + ':' + DB.pass + '@') : '';

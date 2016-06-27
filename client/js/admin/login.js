@@ -65,6 +65,8 @@ socket.on('getOnlineUser', function(users) {
       }
     }
 
+    socket.emit('call', receiver); // 如果后台验证成功可发请求至聊天服务器
+
     console.log('当前聊天对象' + receiver.id + ':' + receiver.username);
   }, false);
 });

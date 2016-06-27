@@ -4,6 +4,8 @@ var chatType = config.chatType;
 var roleType = config.roleType;
 var userModel = model.user;
 
+/************************** 上线下线 ******************************/
+
 function setLastId(socket, data) {
   if (data.length) {
     var lastMessage = data[data.length - 1];
@@ -66,6 +68,8 @@ function clean(socket) {
     socket.leave(socket.room);
   }
 }
+
+/************************** 收发消息 ******************************/
 
 function getReceiverById(senderId, receiverId) {
   var username = '';
@@ -163,6 +167,8 @@ function toEmit(socket, type, receiverId, data) {
   }
 }
 
+/************************** 登录后更新状态 ******************************/
+
 function updateOnlineUser(socket, isOnline) {
   console.info('updateOnlineUser');
 
@@ -202,13 +208,71 @@ function getOnlineUser(socket) {
   socket.emit('getOnlineUser', onlineUsers);
 }
 
-function call(patientId, nurseId) {
-  db.updateMessage(patientId, nurseId);
+/************************** 接待用户 ******************************/
+
+function isUniqueBinding(arr, data) {
+  var result = true;
+
+  for (var key in arr) {
+    if (arr[key].id == data.id) {
+      result = false;
+      break;
+    }
+  }
+
+  return result;
+}
+
+function updateUserBinding(socket, userId, bindingData, isNurse) {
+  for (var index in users) {
+    if (users[index].id == userId) {
+      if (isNurse) {
+        if (isUniqueBinding(users[index].binding, bindingData)) {
+          users[index].binding.push(bindingData);
+        }
+      } else {
+        users[index].binding = bindingData;
+      }
+      socket.binding = users[index].binding;
+      break;
+    }
+  }
+}
+
+function call(socket, patient) {
+  var binding = {
+    nurse: {
+      id: socket[config.pk],
+      username: socket.username
+    },
+    patient: {
+      id: patient.id,
+      username: patient.username
+    }
+  };
+
+  updateUserBinding(socket, binding.nurse.id, binding.patient, true);
+
+  var patientSocketId = conns[binding.patient.id];
+  if (patientSocketId) {
+    updateUserBinding(io.sockets.connected[patientSocketId], binding.patient.id, binding.nurse, false);
+  }
+
+  if (config.debug) {
+    console.info('nurse binding');
+    console.log(socket.binding);
+    console.info('patient binding');
+    console.log(io.sockets.connected[patientSocketId].binding);
+  }
+
+  db.updateOfflineMessage(binding.patient.id, binding.nurse.id);
 }
 
 function callForwarding(userId, fromId, toId) {
 
 }
+
+/************************** export ******************************/
 
 module.exports.setLastId = setLastId;
 module.exports.addUser = addUser;
