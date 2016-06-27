@@ -9,7 +9,8 @@ var DB = {
   pass: '',
   host: 'localhost',
   port: 27017,
-  name: 'test'
+  name: 'test',
+  messageCount: 10 // 每次读取消息条数
 };
 
 DB.auth = (DB.user && DB.pass) ? (DB.user + ':' + DB.pass + '@') : '';

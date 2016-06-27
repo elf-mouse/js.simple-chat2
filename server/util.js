@@ -1,3 +1,5 @@
+// var fs = require('fs');
+// var path = require('path');
 var model = require('./model');
 
 var chatType = config.chatType;
@@ -15,7 +17,7 @@ function setLastId(socket, data) {
       console.info('last message');
       console.log(lastMessage);
     }
-    socket.lastId = lastMessage ? lastMessage._id : 0;
+    socket.lastId = lastMessage ? lastMessage.id : 0;
   }
 }
 
@@ -154,7 +156,9 @@ function toEmit(socket, type, receiverId, data) {
       case config.chats[chatType.image]: // image
         console.log('[SendImage]Received image: ' + senderId + ':' + sender + ' to ' + receiverId + ':' + receiver + ' a pic');
         value.type = chatType.image;
-        value.content = 'this is a image'; // TODO: save image
+        value.content = 'this is a image';
+        // TODO: 保持图片至本地
+        //
         break;
       default: // message
         console.log('[SendMessage]Received message: ' + senderId + ':' + sender + ' to ' + receiverId + ':' + receiver + ' say ' + value.content);

@@ -112,14 +112,15 @@ io.on('connection', function(socket) {
         console.info('loadMessage');
         console.log('username:' + socket.username + ',lastId:' + socket.lastId);
       }
-      if (socket.lastId) {
-        db.readMessage(socket.id, socket.lastId, function(data) {
+      db.readMessage(socket[config.pk], socket.lastId, function(data) {
+        if (data.length) {
           util.setLastId(socket, data);
           socket.emit('loadMessage', data);
-        });
-      } else {
-        socket.canLoad = false;
-      }
+        } else {
+          socket.canLoad = false;
+          socket.emit('loadMessage', []);
+        }
+      });
     } else {
       console.warn('no more message');
     }

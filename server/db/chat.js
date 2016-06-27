@@ -21,7 +21,7 @@ function readMessage(userId, lastId, callback) {
   var options = {
     select: 'sender receiver type content created',
     sort: { created: -1 },
-    limit: 20 // 每次读取消息条数
+    limit: config.db.messageCount
   };
   var query = Chat.find({ $or: [{ sender: userId }, { receiver: userId }] });
 
@@ -41,6 +41,7 @@ function readMessage(userId, lastId, callback) {
         var result = [];
         for (var item of data) {
           var value = {
+            id: item._id,
             sender: item.sender,
             receiver: item.receiver,
             type: item.type,

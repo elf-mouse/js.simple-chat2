@@ -68,6 +68,7 @@ function initMessage() {
 function loadMessage(data) {
   if (!data.length) {
     window.hasMessage = false;
+    console.log('没有更多消息');
   }
 
   if (window.hasMessage) {
