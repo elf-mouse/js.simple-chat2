@@ -3,7 +3,7 @@ global.db = require('./server/db/chat');
 global.io = require('socket.io')(config.server.port);
 global.users = []; // 用户数据
 global.userIds = []; // 用户ID列表
-global.conns = {}; // 连接集合{userId:socketId}
+global.conns = []; // 连接集合{userId:socketId}
 
 var util = require('./server/util');
 var chatType = config.chatType;
@@ -21,28 +21,17 @@ io.on('connection', function(socket) {
     var userId = user.id;
     var username = user.username;
 
-    if (userIds.indexOf(userId) > -1) {
-      console.log('[Login][' + role + ']' + userId + ':' + username + ' is existed');
-
-      socket.emit('userExisted');
-
-      // fix clean bug
-      if (!conns[userId]) {
-        console.warn('[WARNING]bugfix');
-        for (var index in users) {
-          if (users[index][config.pk] === userId) {
-            users.splice(index, 1);
-            break;
-          }
-        }
-        for (var index in userIds) {
-          if (userIds[index] === userId) {
-            userIds.splice(index, 1);
-            break;
-          }
-        }
+    // 防止设备重复登录
+    var uniqueDevice = true;
+    for (var socketId of conns) {
+      if (socketId === socket.id) {
+        uniqueDevice = false;
+        break;
       }
-    } else {
+    }
+
+    var canLogin = uniqueDevice && userIds.indexOf(userId) === -1;
+    if (canLogin) {
       console.log('[Login][' + role + ']' + userId + ':' + username + ' sign in');
 
       util.addUser(socket, user);
@@ -55,6 +44,27 @@ io.on('connection', function(socket) {
           util.getOnlineUser(socket);
           break;
       }
+    } else {
+      console.log('[Login][' + role + ']' + userId + ':' + username + ' is existed');
+
+      socket.emit('userExisted');
+
+      // fix clean bug
+      // if (!conns[userId]) {
+      //   console.warn('[WARNING]bugfix');
+      //   for (var index in users) {
+      //     if (users[index][config.pk] === userId) {
+      //       users.splice(index, 1);
+      //       break;
+      //     }
+      //   }
+      //   for (var index in userIds) {
+      //     if (userIds[index] === userId) {
+      //       userIds.splice(index, 1);
+      //       break;
+      //     }
+      //   }
+      // }
     }
   });
 
