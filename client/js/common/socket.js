@@ -42,4 +42,9 @@ socket.on('image', function(sender, imgData) {
   showImage(sender, imgData);
 });
 
+// 转接通知
+socket.on('callForwarding', function(data) {
+  console.log('护士' + data.nurse.username + '已将病人' + data.patient.username + '转入您名下');
+});
+
 export default socket;

@@ -211,11 +211,11 @@ function getOnlineUser(socket) {
 /************************** 接待用户 ******************************/
 
 function isUniqueBinding(arr, data) {
-  var result = true;
+  var result = -1;
 
   for (var key in arr) {
     if (arr[key].id == data.id) {
-      result = false;
+      result = key;
       break;
     }
   }
@@ -223,17 +223,29 @@ function isUniqueBinding(arr, data) {
   return result;
 }
 
-function updateUserBinding(socket, userId, bindingData, isNurse) {
+function updateUserBinding(socket, data, isDelete) {
+  isDelete = isDelete || false;
+
   for (var index in users) {
-    if (users[index].id == userId) {
-      if (isNurse) {
-        if (isUniqueBinding(users[index].binding, bindingData)) {
-          users[index].binding.push(bindingData);
+    if (users[index].id == data.userId) {
+
+      if (data.isNurse) {
+        var result = isUniqueBinding(users[index].binding, data.binding);
+        if (isDelete) { // 删除
+          if (result > -1) {
+            users[index].binding.splice(result, 1);
+          }
+        } else { // 新增
+          if (result == -1) {
+            users[index].binding.push(data.binding);
+          }
         }
       } else {
-        users[index].binding = bindingData;
+        users[index].binding = data.binding; // 新增/修改
       }
+
       socket.binding = users[index].binding;
+
       break;
     }
   }
@@ -251,25 +263,93 @@ function call(socket, patient) {
     }
   };
 
-  updateUserBinding(socket, binding.nurse.id, binding.patient, true);
-
-  var patientSocketId = conns[binding.patient.id];
-  if (patientSocketId) {
-    updateUserBinding(io.sockets.connected[patientSocketId], binding.patient.id, binding.nurse, false);
-  }
+  updateUserBinding(socket, {
+    userId: binding.nurse.id,
+    binding: binding.patient,
+    isNurse: true
+  });
 
   if (config.debug) {
     console.info('nurse binding');
     console.log(socket.binding);
-    console.info('patient binding');
-    console.log(io.sockets.connected[patientSocketId].binding);
+  }
+
+  var patientSocketId = conns[binding.patient.id];
+  if (patientSocketId) {
+    updateUserBinding(io.sockets.connected[patientSocketId], {
+      userId: binding.patient.id,
+      binding: binding.nurse,
+      isNurse: false
+    });
+
+    if (config.debug) {
+      console.info('patient binding');
+      console.log(io.sockets.connected[patientSocketId].binding);
+    }
   }
 
   db.updateOfflineMessage(binding.patient.id, binding.nurse.id);
 }
 
-function callForwarding(userId, fromId, toId) {
+function callForwarding(socket, patient, nurse) {
+  var binding = {
+    fromNurse: {
+      id: socket[config.pk],
+      username: socket.username
+    },
+    patient: {
+      id: patient.id,
+      username: patient.username
+    },
+    toNurse: {
+      id: nurse.id,
+      username: nurse.username
+    }
+  };
 
+  updateUserBinding(socket, {
+    userId: binding.fromNurse.id,
+    binding: binding.patient,
+    isNurse: true
+  }, true);
+
+  if (config.debug) {
+    console.info('from nurse binding');
+    console.log(socket.binding);
+  }
+
+  var patientSocketId = conns[binding.patient.id];
+  if (patientSocketId) {
+    updateUserBinding(io.sockets.connected[patientSocketId], {
+      userId: binding.patient.id,
+      binding: binding.toNurse,
+      isNurse: false
+    });
+
+    if (config.debug) {
+      console.info('patient binding');
+      console.log(io.sockets.connected[patientSocketId].binding);
+    }
+  }
+
+  var nurseSocketId = conns[binding.toNurse.id];
+  if (nurseSocketId) {
+    updateUserBinding(io.sockets.connected[nurseSocketId], {
+      userId: binding.toNurse.id,
+      binding: binding.patient,
+      isNurse: true
+    });
+    // 转接通知
+    io.sockets.connected[nurseSocketId].emit('callForwarding', {
+      nurse: binding.fromNurse,
+      patient: binding.patient
+    });
+
+    if (config.debug) {
+      console.info('to nurse binding');
+      console.log(io.sockets.connected[nurseSocketId].binding);
+    }
+  }
 }
 
 /************************** export ******************************/

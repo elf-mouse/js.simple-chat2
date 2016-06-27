@@ -127,10 +127,10 @@ io.on('connection', function(socket) {
   /**
    * 转接
    */
-  socket.on('callForwarding', function(userId, toId) {
+  socket.on('callForwarding', function(patient, nurse) {
     var fromId = socket[config.pk];
-    console.info('[Call Forwarding]' + userId + ':' + fromId + '->' + toId);
-    util.callForwarding(userId, fromId, toId);
+    console.info('[Call Forwarding]' + patient.id + ':' + fromId + '->' + nurse.id);
+    util.callForwarding(socket, patient, nurse);
   });
 
 });
