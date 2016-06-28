@@ -6,7 +6,6 @@ var Chat = mongoose.model('Chat', chatSchema);
 
 function writeMessage(data) {
   var chat = new Chat(data);
-  console.log('before save chat', chat);
 
   chat.save(function(err) {
     if (err) {
@@ -38,7 +37,6 @@ function readMessage(userId, lastId, callback) {
         console.error('[DB]' + err);
         callback([]);
       } else {
-        console.log('获取消息条数:' + data.length);
         var result = [];
         for (var item of data) {
           var value = {
