@@ -7,11 +7,11 @@ function clearMessage() {
 }
 
 // 创建聊天模板
-function createMessageTpl(sender, content, time = '') {
+function createMessageTpl(senderId, content, time = '') {
   var userId = window.user.id; // 当前用户
-  var className = sender === userId ? 'sender' : 'receiver';
+  var className = senderId == userId ? 'sender' : 'receiver';
 
-  var tpl = `<div class="${className}">${sender}<p>${content}</p></div>`;
+  var tpl = `<div class="${className}">senderId: ${senderId}<p>${content}</p></div>`;
 
   return tpl;
 }
@@ -40,13 +40,13 @@ function showEmoji(msg) {
 }
 
 // 显示聊天
-function showMessage(sender, msg) {
+function showMessage(senderId, msg) {
   var container = document.getElementById('history-message'),
     msgToDisplay = document.createElement('p'),
     date = new Date().toTimeString().substr(0, 8),
     msg = showEmoji(msg); // determine whether the msg contains emoji
 
-  msgToDisplay.innerHTML = createMessageTpl(sender, msg);
+  msgToDisplay.innerHTML = createMessageTpl(senderId, msg);
   container.appendChild(msgToDisplay);
   container.scrollTop = container.scrollHeight;
 }
@@ -54,7 +54,7 @@ function showMessage(sender, msg) {
 // 发送消息
 function sendMessage(socket, sender, receiverId, message) {
   socket.emit('message', receiverId, message);
-  showMessage(sender.username, message);
+  showMessage(sender.id, message);
   clearMessage();
 }
 
@@ -80,7 +80,7 @@ function loadMessage(data) {
 
     for (var i = data.length - 1; i >= 0; i--) {
       var msg = data[i];
-      tpl += createMessageTpl(msg.sender, showEmoji(msg.content));
+      tpl += createMessageTpl(msg.senderId, showEmoji(msg.content));
     }
 
     var output = createHTML(tpl);
@@ -91,12 +91,12 @@ function loadMessage(data) {
 }
 
 // 显示图片
-function showImage(sender, imgData) {
+function showImage(senderId, imgData) {
   var container = document.getElementById('history-message'),
     msgToDisplay = document.createElement('p'),
     date = new Date().toTimeString().substr(0, 8);
 
-  msgToDisplay.innerHTML = createMessageTpl(sender, '<img src="' + imgData + '">');
+  msgToDisplay.innerHTML = createMessageTpl(senderId, '<img src="' + imgData + '">');
   container.appendChild(msgToDisplay);
   container.scrollTop = container.scrollHeight;
 }

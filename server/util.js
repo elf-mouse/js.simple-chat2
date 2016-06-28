@@ -136,19 +136,19 @@ function toEmit(socket, type, receiverId, data) {
     }
 
     if (socketId) { // receiver在线
-      io.sockets.connected[socketId].emit(type, sender, data);
+      io.sockets.connected[socketId].emit(type, senderId, data);
     } else { // receiver离线
       console.log('user is offline');
 
       if (socket.role === roleType.patient) {
-        socket.to(config.roles[roleType.nurse]).emit(type, sender, data);
+        socket.to(config.roles[roleType.nurse]).emit(type, senderId, data);
       }
     }
 
     var value = {
-      sender: senderId,
-      receiver: receiverId,
-      type: chatType.message,
+      sender_id: senderId,
+      receiver_id: receiverId,
+      chat_type: chatType.message,
       content: data
     };
 

@@ -26,9 +26,9 @@ socket.on('status', function(current_user, users) {
 });
 
 // 接收消息
-socket.on('message', function(sender, msg) {
+socket.on('message', function(senderId, msg) {
   console.log('成功接收消息');
-  showMessage(sender, msg);
+  showMessage(senderId, msg);
 });
 
 // 接收历史消息
@@ -38,8 +38,8 @@ socket.on('loadMessage', function(data) {
 });
 
 // 接收图片
-socket.on('image', function(sender, imgData) {
-  showImage(sender, imgData);
+socket.on('image', function(senderId, imgData) {
+  showImage(senderId, imgData);
 });
 
 // 转接通知

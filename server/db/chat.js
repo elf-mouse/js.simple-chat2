@@ -19,11 +19,11 @@ function writeMessage(data) {
 
 function readMessage(userId, lastId, callback) {
   var options = {
-    select: 'sender receiver type content created',
-    sort: { created: -1 },
+    select: 'sender_id receiver_id chat_type content created_at',
+    sort: { created_at: -1 },
     limit: config.db.messageCount
   };
-  var query = Chat.find({ $or: [{ sender: userId }, { receiver: userId }] });
+  var query = Chat.find({ $or: [{ sender_id: userId }, { receiver_id: userId }] });
 
   if (lastId || false) {
     query.where('_id').lt(lastId);
@@ -38,15 +38,16 @@ function readMessage(userId, lastId, callback) {
         console.error('[DB]' + err);
         callback([]);
       } else {
+        console.log('获取消息条数:' + data.length);
         var result = [];
         for (var item of data) {
           var value = {
             id: item._id,
-            sender: item.sender,
-            receiver: item.receiver,
-            type: item.type,
+            senderId: item.sender_id,
+            receiverId: item.receiver_id,
+            chatType: item.chat_type,
             content: item.content,
-            created: new Date(item.created).getTime() // 转时间戳
+            created: new Date(item.created_at).getTime() // 转时间戳
           };
           result.push(value);
         }
@@ -56,8 +57,8 @@ function readMessage(userId, lastId, callback) {
 }
 
 function updateOfflineMessage(patientId, nurseId) {
-  var conditions = { $and: [{ sender: patientId }, { receiver: 0 }] };
-  var update = { $set: { receiver: nurseId } };
+  var conditions = { $and: [{ sender_id: patientId }, { receiver_id: 0 }] };
+  var update = { $set: { receiver_id: nurseId } };
   var options = { multi: true };
 
   Chat.where(conditions)

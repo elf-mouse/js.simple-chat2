@@ -3,7 +3,7 @@ global.db = require('./server/db/chat');
 global.io = require('socket.io')(config.server.port);
 global.users = []; // 用户数据
 global.userIds = []; // 用户ID列表
-global.conns = []; // 连接集合{userId:socketId}
+global.conns = {}; // 连接集合{userId:socketId}
 
 var util = require('./server/util');
 var chatType = config.chatType;
@@ -23,8 +23,8 @@ io.on('connection', function(socket) {
 
     // 防止设备重复登录
     var uniqueDevice = true;
-    for (var socketId of conns) {
-      if (socketId === socket.id) {
+    for (var userId in conns) {
+      if (conns[userId] === socket.id) {
         uniqueDevice = false;
         break;
       }
@@ -45,7 +45,7 @@ io.on('connection', function(socket) {
           break;
       }
     } else {
-      console.log('[Login][' + role + ']' + userId + ':' + username + ' is existed');
+      console.log('[Login]user is existed');
 
       socket.emit('userExisted');
 

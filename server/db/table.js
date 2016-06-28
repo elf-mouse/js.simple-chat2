@@ -1,12 +1,18 @@
 var chat = {
-  sender: Number,
-  receiver: Number,
-  type: {
+  sender_id: {
+    type: Number,
+    default: 0
+  },
+  receiver_id: {
+    type: Number,
+    default: 0
+  },
+  chat_type: {
     type: Number,
     default: config.chatType.message
   },
   content: String,
-  created: {
+  created_at: {
     type: Date,
     default: Date.now
   }
