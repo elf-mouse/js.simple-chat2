@@ -23,11 +23,12 @@ var CHAT_TYPE = {
 };
 var CHATS = ['message', 'image'];
 
+// 注：用户角色ID跟着MySQL设定走（从1开始）
 var ROLE_TYPE = {
-  patient: 0,
-  nurse: 1
+  patient: 1,
+  nurse: 2
 };
-var ROLES = ['patient', 'nurse'];
+var ROLES = ['zero', 'patient', 'nurse']; // zero暂时无效
 
 
 module.exports.debug = DEBUG;
