@@ -12,10 +12,12 @@
 //   binding: Array
 // };
 
+// key为客户端的字段名
+// value为服务端的字段名
 var user = {
   id: config.pk,
   username: 'username',
-  role: 'role',
+  type: 'role',
   binding: {
     id: 'id',
     username: 'username'

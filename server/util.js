@@ -39,7 +39,7 @@ function addUser(socket, user) {
   for (var field in userModel) {
     if (userModelKeys.indexOf(field) > -1) { // 检查数据格式
       allow = true;
-      var key = (field === 'id') ? userModel[field] : field;
+      var key = (field === 'id' || field === 'type') ? userModel[field] : field;
       var value = user[field];
       socket[key] = value; // e.g. socket.username = user.username
     }
