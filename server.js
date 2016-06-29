@@ -50,21 +50,21 @@ io.on('connection', function(socket) {
       socket.emit('userExisted');
 
       // fix clean bug
-      // if (!conns[userId]) {
-      //   console.warn('[WARNING]bugfix');
-      //   for (var index in users) {
-      //     if (users[index][config.pk] === userId) {
-      //       users.splice(index, 1);
-      //       break;
-      //     }
-      //   }
-      //   for (var index in userIds) {
-      //     if (userIds[index] === userId) {
-      //       userIds.splice(index, 1);
-      //       break;
-      //     }
-      //   }
-      // }
+      if (!conns[userId]) {
+        console.warn('[WARNING]bugfix');
+        for (var index in users) {
+          if (users[index][config.pk] === userId) {
+            users.splice(index, 1);
+            break;
+          }
+        }
+        for (var index in userIds) {
+          if (userIds[index] === userId) {
+            userIds.splice(index, 1);
+            break;
+          }
+        }
+      }
     }
   });
 

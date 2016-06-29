@@ -21,39 +21,59 @@ function setLastId(socket, data) {
   }
 }
 
+function getUserModelKeys() {
+  var keys = [];
+  for (var key in userModel) {
+    keys.push(key);
+  }
+  return keys;
+}
+
 function addUser(socket, user) {
   console.info('addUser');
 
-  var roleName = config.roles[user.role];
+  var userModelKeys = getUserModelKeys();
 
   // for local
-  socket.userIndex = userIds.length;
+  var allow = false;
   for (var field in userModel) {
-    var key = (field === 'id') ? userModel[field] : field;
-    var value = user[field];
-    socket[key] = value; // e.g. socket.username = user.username
+    if (userModelKeys.indexOf(field) > -1) { // 检查数据格式
+      allow = true;
+      var key = (field === 'id') ? userModel[field] : field;
+      var value = user[field];
+      socket[key] = value; // e.g. socket.username = user.username
+    }
   }
-  socket.canLoad = true; // for load message
-  socket.room = roleName;
-  socket.join(roleName); // 分组
 
-  // for global
-  users.push(user); // origin user data
-  var userId = socket[config.pk];
-  userIds.push(userId); // new user id
-  conns[userId] = socket.id;
+  if (allow) {
+    var roleName = config.roles[user.role];
 
-  // db select
-  db.readMessage(userId, null, function(data) {
-    setLastId(socket, data);
-    socket.emit('loginSuccess', data);
-  });
+    socket.userIndex = userIds.length;
+    socket.canLoad = true; // for load message
+    socket.room = roleName;
+    socket.join(roleName); // 分组
+
+    // for global
+    users.push(user); // origin user data
+    var userId = socket[config.pk];
+    userIds.push(userId); // new user id
+    conns[userId] = socket.id;
+
+    // db select
+    db.readMessage(userId, null, function(data) {
+      setLastId(socket, data);
+      socket.emit('loginSuccess', data);
+    });
+  } else {
+    socket.emit('system', 'disallow');
+  }
 }
 
 function clean(socket) {
   console.info('clean');
 
   if (typeof socket.userIndex === 'undefined') { // important
+    console.warn('userIndex is undefined');
     if (config.debug) {
       console.info('users');
       console.log(users);
