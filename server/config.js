@@ -30,6 +30,7 @@ var ROLE_TYPE = {
 };
 var ROLES = ['zero', 'patient', 'nurse']; // zero暂时无效
 
+var UPLOAD_DIR = __dirname + '/../uploads/';
 
 module.exports.debug = DEBUG;
 module.exports.server = SERVER;
@@ -39,3 +40,4 @@ module.exports.chatType = CHAT_TYPE;
 module.exports.chats = CHATS;
 module.exports.roleType = ROLE_TYPE;
 module.exports.roles = ROLES;
+module.exports.uploadDir = UPLOAD_DIR;

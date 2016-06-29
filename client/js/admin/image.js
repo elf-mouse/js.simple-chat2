@@ -23,7 +23,7 @@ document.getElementById('image').addEventListener('change', function() {
     reader.onload = function(e) {
       this.value = '';
       socket.emit('image', receiverId, e.target.result);
-      showImage(sender.username, e.target.result);
+      showImage(sender.id, e.target.result);
     };
 
     reader.readAsDataURL(file);

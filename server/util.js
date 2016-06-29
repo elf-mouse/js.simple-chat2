@@ -1,5 +1,3 @@
-// var fs = require('fs');
-// var path = require('path');
 var model = require('./model');
 
 var chatType = config.chatType;
@@ -130,6 +128,22 @@ function getReceiverById(senderId, receiverId) {
   return username;
 }
 
+function saveFile(value, data) {
+  var date = new Date();
+  // path to store uploaded files (NOTE: presumed you have created the folders)
+  var filename = date.getTime() + '.png';
+
+  var base64Data = data.replace(/^data:image\/png;base64,/, '');
+  require('fs').writeFile(config.uploadDir + filename, base64Data, 'base64', function(err) {
+    if (err) {
+      throw err;
+    }
+    value.content = filename;
+    db.writeMessage(value); // insert db
+    console.log('File saved successful!');
+  });
+}
+
 function toEmit(socket, type, receiverId, data) {
   console.info('toEmit');
 
@@ -175,17 +189,15 @@ function toEmit(socket, type, receiverId, data) {
     switch (type) {
       case config.chats[chatType.image]: // image
         console.log('[SendImage]Received image: ' + senderId + ':' + sender + ' to ' + receiverId + ':' + receiver + ' a pic');
-        value.type = chatType.image;
-        value.content = 'this is a image';
-        // TODO: 保持图片至本地
-        //
+        value.chat_type = chatType.image;
+        // 保持图片至本地
+        saveFile(value, data);
         break;
       default: // message
         console.log('[SendMessage]Received message: ' + senderId + ':' + sender + ' to ' + receiverId + ':' + receiver + ' say ' + value.content);
+        db.writeMessage(value); // insert db
         break;
     }
-
-    db.writeMessage(value); // insert db
   } else {
     console.log('user is unlogin');
   }

@@ -72,15 +72,14 @@ function loadMessage(data) {
   }
 
   if (window.hasMessage) {
-    var username = window.user.username; // 当前用户名
-
     console.log(data);
 
     var tpl = '<p class="time">时间 xxxx-xx-xx</p>';
 
     for (var i = data.length - 1; i >= 0; i--) {
       var msg = data[i];
-      tpl += createMessageTpl(msg.senderId, showEmoji(msg.content));
+      var content = (msg.chatType == 1) ? msg.content : showEmoji(msg.content); // 图片未处理
+      tpl += createMessageTpl(msg.senderId, content);
     }
 
     var output = createHTML(tpl);
