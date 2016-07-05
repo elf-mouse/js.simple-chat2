@@ -103,14 +103,14 @@ function showImage(senderId, imgData) {
 // 模拟获取用户信息
 function getUserInfo(userId, role) {
   var userInfo = {};
-  var list = role === 1 ? data.nurse : data.patient;
+  var list = role === 1 ? data.patient : data.nurse;
 
   for (var user of list) {
     if (user.id == userId) {
       userInfo = user;
     }
   }
-  userInfo.role = role;
+  userInfo.type = role;
 
   return userInfo;
 }

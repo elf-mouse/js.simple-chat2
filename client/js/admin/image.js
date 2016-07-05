@@ -15,7 +15,7 @@ document.getElementById('image').addEventListener('change', function() {
     var reader = new FileReader();
 
     if (!reader) {
-      showMessage('system', 'your browser doesn\'t support fileReader');
+      console('your browser doesn\'t support fileReader');
       this.value = '';
       return;
     };

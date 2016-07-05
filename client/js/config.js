@@ -8,8 +8,8 @@ var CONFIG = {
 };
 
 var ROLE_TYPE = {
-  patient: 0,
-  nurse: 1
+  patient: 1,
+  nurse: 2
 };
 
 var historyMessageObj = document.getElementById('history-message');

@@ -13,22 +13,21 @@ socket.on('connect', function() {
   console.log('connect...');
 });
 
-// 系统消息
-socket.on('system', function(name, count, type) {
-  console.log('[' + type + '] 当前用户 ' + name + ' 当前人数 ' + count);
-});
-
-// 当前状态
-socket.on('status', function(current_user, users) {
-  console.log('[Status]当前用户:' + current_user);
-  console.log('[Status]在线人数:' + users.length);
-  console.log(users);
+// 获取当前状态
+socket.on('status', function(data) {
+  console.log('[Status]当前用户:' + data.currentUser);
+  console.log('[Status]在线人数:' + data.userIds.length);
+  console.log(data.users);
+  console.log(data.userIds);
 });
 
 // 接收消息
-socket.on('message', function(senderId, msg) {
+socket.on('message', function(data) {
   console.log('成功接收消息');
-  showMessage(senderId, msg);
+  if (data.unread && document.getElementById('msg-' + data.senderId)) {
+    document.getElementById('msg-' + data.senderId).innerHTML = data.unread;
+  }
+  showMessage(data.senderId, data.message);
 });
 
 // 接收历史消息
@@ -38,8 +37,12 @@ socket.on('loadMessage', function(data) {
 });
 
 // 接收图片
-socket.on('image', function(senderId, imgData) {
-  showImage(senderId, imgData);
+socket.on('image', function(data) {
+  console.log('成功接收图片');
+  if (data.unread && document.getElementById('msg-' + data.senderId)) {
+    document.getElementById('msg-' + data.senderId).innerHTML = data.unread;
+  }
+  showImage(data.senderId, data.message);
 });
 
 // 转接通知

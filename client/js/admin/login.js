@@ -66,7 +66,8 @@ socket.on('getOnlineUser', function(users) {
     }
 
     // 接待用户
-    // socket.emit('call', receiver);
+    socket.emit('call', receiver);
+    document.getElementById('msg-' + receiver.id).innerHTML = '';
 
     // 转接用户
     // socket.emit('callForwarding', data.patient[3], data.nurse[0]);
