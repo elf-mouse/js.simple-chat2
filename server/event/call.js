@@ -43,5 +43,6 @@ module.exports = function(socket, patient) {
     }
   }
 
+  offlineMessage[binding.patient.id] = 0; // 重置离线未读消息数
   db.updateOfflineMessage(binding.patient.id, binding.nurse.id);
 };

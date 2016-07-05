@@ -107,11 +107,13 @@ module.exports = function(socket, type, receiverId, data) {
       console.log('user is offline');
 
       if (socket.role === roleType.patient) { // 群发
+        offlineMessage[senderId] += 1; // 更新离线未读消息数
+        console.log('offlineMessage ' + senderId + ':' + offlineMessage[senderId]);
         // response
         socket.to(config.roles[roleType.nurse]).emit(type, {
           senderId: senderId,
           message: data,
-          unread: 0
+          unread: offlineMessage[senderId]
         });
       }
     }

@@ -42,6 +42,20 @@ function addUser(socket, user) {
     userIds.push(userId); // new user id
     users[userId] = user; // origin user data
     conns[userId] = socket.id; // client id
+    if (user.type === config.roleType.patient) {
+      offlineMessage[userId] = 0; // 设置离线未读消息数
+      console.log('offlineMessage ' + userId + ':' + offlineMessage[userId]);
+    }
+
+    console.log('register===========================');
+    if (config.debug) {
+      console.info('userIds');
+      console.log(userIds);
+      console.info('users');
+      console.log(users);
+      console.info('conns');
+      console.log(conns);
+    }
 
     // db select
     db.readMessage(userId, null, function(data) {
