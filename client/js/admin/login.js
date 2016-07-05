@@ -39,12 +39,21 @@ socket.on('loginSuccess', function(data) {
   loadMessage(data);
 });
 
-// 更新在线状态
+/**
+ * 更新在线状态
+ *
+ * user.id 用户ID
+ * user.username 用户名
+ * user.isOnline 是否上线
+ */
 socket.on('updateOnlineUser', function(user) {
   console.log(user);
 });
 
-// 获取在线状态
+/**
+ * 获取在线状态
+ * @param  {[array]} users 在线患者列表
+ */
 socket.on('getOnlineUser', function(users) {
   console.log(users);
 });

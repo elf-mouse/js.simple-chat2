@@ -15,13 +15,14 @@ document.getElementById('image').addEventListener('change', function() {
     var reader = new FileReader();
 
     if (!reader) {
-      console('your browser doesn\'t support fileReader');
+      console.log('your browser doesn\'t support fileReader');
       this.value = '';
       return;
     };
 
     reader.onload = function(e) {
       this.value = '';
+      // 发图片
       socket.emit('image', receiverId, e.target.result);
       showImage(sender.id, e.target.result);
     };
