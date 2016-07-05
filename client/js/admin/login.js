@@ -11,7 +11,7 @@ document.getElementById('login').addEventListener('click', function() {
 
   var userId = document.getElementById('users').value;
   user = getUserInfo(userId, roleType.nurse);
-
+  // 登录聊天服务器
   socket.emit('login', user); // 真实环境应进入页面时自动触发
 }, false);
 
@@ -25,7 +25,10 @@ socket.on('userExisted', function() {
   console.log(user.id + ':' + user.username + ' userExisted');
 });
 
-// 登录成功
+/**
+ * 登录成功
+ * @param  {[array]} data 消息列表
+ */
 socket.on('loginSuccess', function(data) {
   console.log(user.id + ':' + user.username + ' loginSuccess');
 

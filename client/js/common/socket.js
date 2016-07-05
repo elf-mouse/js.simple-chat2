@@ -21,7 +21,13 @@ socket.on('status', function(data) {
   console.log(data.userIds);
 });
 
-// 接收消息
+/**
+ * 接收消息
+ *
+ * data.senderId 发送者ID
+ * data.message 消息内容
+ * data.unread 未读消息
+ */
 socket.on('message', function(data) {
   console.log('成功接收消息');
   if (data.unread && document.getElementById('msg-' + data.senderId)) {
@@ -30,13 +36,22 @@ socket.on('message', function(data) {
   showMessage(data.senderId, data.message);
 });
 
-// 接收历史消息
+/**
+ * 接收历史消息
+ * @param  {[array]} data 消息列表
+ */
 socket.on('loadMessage', function(data) {
   console.log('成功接收历史消息');
   loadMessage(data);
 });
 
-// 接收图片
+/**
+ * 接收图片
+ *
+ * data.senderId 发送者ID
+ * data.message 图片内容
+ * data.unread 未读消息
+ */
 socket.on('image', function(data) {
   console.log('成功接收图片');
   if (data.unread && document.getElementById('msg-' + data.senderId)) {
@@ -45,7 +60,12 @@ socket.on('image', function(data) {
   showImage(data.senderId, data.message);
 });
 
-// 转接通知
+/**
+ * 转接通知
+ *
+ * data.nurse 秘书绑定信息
+ * data.patinet 患者绑定信息
+ */
 socket.on('callForwarding', function(data) {
   console.log('护士' + data.nurse.username + '已将病人' + data.patient.username + '转入您名下');
 });

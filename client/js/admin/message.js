@@ -34,6 +34,7 @@ window.historyMessageObj.addEventListener('scroll', function() {
     window.requestAnimationFrame(function() {
       if (lastKnownScrollPosition < 88) {
         console.log('loading');
+        // 获取更多历史消息
         socket.emit('loadMessage');
       }
       if (window.hasMessage) {
