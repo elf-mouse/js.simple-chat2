@@ -58,9 +58,11 @@ io.on('connection', function(socket) {
 
   /**
    * [加载更多消息]
+   * @param  {[int]} patientId [患者ID] (患者角色请求接口时无需传参)
    */
-  socket.on('loadMessage', function() {
-    event.loadMessage(socket);
+  socket.on('loadMessage', function(patientId) {
+    patientId = patientId || 0;
+    event.loadMessage(socket, patientId);
   });
 
   /************************** 后台专用事件 *******************************/

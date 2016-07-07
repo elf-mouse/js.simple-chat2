@@ -58,11 +58,20 @@ function addUser(socket, user) {
     }
 
     // db select
-    db.readMessage(userId, null, function(data) {
-      util.setLastId(socket, data);
-      // response
-      socket.emit('loginSuccess', data);
-    });
+    if (user.type === config.roleType.nurse) {
+      console.log('nurse get message');
+      db.getAllOfflineMessage(function(data) { // 秘书登录后获取全部离线消息
+        // response
+        socket.emit('loginSuccess', data);
+      });
+    } else {
+      console.log('patient get message');
+      db.getPatientMessage(userId, null, function(data) { // 患者登录后获取最近几条聊天记录
+        util.setLastId(socket, data);
+        // response
+        socket.emit('loginSuccess', data);
+      });
+    }
   } else {
     // response
     socket.emit('system', 'disallow');

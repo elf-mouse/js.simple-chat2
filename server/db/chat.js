@@ -4,6 +4,9 @@ var table = require('./table');
 var chatSchema = mongoose.Schema(table.chat);
 var Chat = mongoose.model('Chat', chatSchema);
 
+/**
+ * 写消息
+ */
 function writeMessage(data) {
   var chat = new Chat(data);
 
@@ -16,16 +19,14 @@ function writeMessage(data) {
   });
 }
 
-function readMessage(userId, lastId, callback) {
+function readMessage(query, all, callback) {
   var options = {
     select: 'sender_id receiver_id chat_type content created_at',
-    sort: { created_at: -1 },
-    limit: config.db.messageCount
+    sort: { created_at: -1 }
   };
-  var query = Chat.find({ $or: [{ sender_id: userId }, { receiver_id: userId }] });
 
-  if (lastId || false) {
-    query.where('_id').lt(lastId);
+  if (!all) {
+    options.limit = config.db.messageCount;
   }
 
   query
@@ -54,6 +55,31 @@ function readMessage(userId, lastId, callback) {
     });
 }
 
+/**
+ * 获取患者消息
+ */
+function getPatientMessage(patientId, lastId, callback) {
+  var query = Chat.find({ $or: [{ sender_id: patientId }, { receiver_id: patientId }] });
+
+  if (lastId || false) {
+    query.where('_id').lt(lastId);
+  }
+
+  readMessage(query, false, callback);
+}
+
+/**
+ * 获取全部离线消息
+ */
+function getAllOfflineMessage(callback) {
+  var query = Chat.where({ receiver_id: 0 });
+
+  readMessage(query, true, callback);
+}
+
+/**
+ * 更新离线消息关系链
+ */
 function updateOfflineMessage(patientId, nurseId) {
   var conditions = { $and: [{ sender_id: patientId }, { receiver_id: 0 }] };
   var update = { $set: { receiver_id: nurseId } };
@@ -71,5 +97,7 @@ function updateOfflineMessage(patientId, nurseId) {
 }
 
 module.exports.writeMessage = writeMessage;
-module.exports.readMessage = readMessage;
+module.exports.getPatientMessage = getPatientMessage;
+// module.exports.getNurseMessage = getNurseMessage;
+module.exports.getAllOfflineMessage = getAllOfflineMessage;
 module.exports.updateOfflineMessage = updateOfflineMessage;

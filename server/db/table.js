@@ -1,8 +1,5 @@
 var chat = {
-  sender_id: {
-    type: Number,
-    default: 0
-  },
+  sender_id: Number,
   receiver_id: {
     type: Number,
     default: 0

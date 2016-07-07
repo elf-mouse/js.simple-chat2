@@ -118,7 +118,7 @@ socket.on('image', function(data) {
 ### 历史消息
 
 ```
-socket.emit('loadMessage');
+socket.emit('loadMessage', patientId);
 ```
 
 ```
