@@ -17,10 +17,37 @@ socket.on('disconnected', function() {
 ### 登录
 
 ```
+// 患者数据
+var user = {
+  id: 1，
+  username: '用户名1',
+  type: 0,
+  tag_id: 1
+  binding: {
+    id: 2,
+    username: '绑定用户名2'
+  }
+};
+
+// 秘书数据
+var user = {
+  id: 2，
+  username: '用户名2',
+  type: 1,
+  tag_id: 1
+  binding: [{
+    id: 1,
+    username: '绑定用户名1'
+  }, {
+    id: 3,
+    username: '绑定用户名3'
+  }]
+};
+
 socket.emit('login', user);
 ```
 
-> `user` 结构参照 `js/data.js`
+> `user` 基本结构参照 `js/data.js`
 
 ```
 // 已登录

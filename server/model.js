@@ -18,6 +18,7 @@ var user = {
   id: config.pk,
   username: 'username',
   type: 'role',
+  tag_id: 'tag_id', // 2016.07.07 新增 `分组ID`
   binding: {
     id: 'id',
     username: 'username'

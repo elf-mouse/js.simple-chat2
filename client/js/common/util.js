@@ -111,6 +111,7 @@ function getUserInfo(userId, role) {
     }
   }
   userInfo.type = role;
+  userInfo.tag_id = 1; // for test
 
   return userInfo;
 }
