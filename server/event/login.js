@@ -11,7 +11,7 @@ function getUserModelKeys() {
 }
 
 function addUser(socket, user) {
-  console.info('addUser');
+  console.info(util.now() + 'addUser');
 
   var userModelKeys = getUserModelKeys();
 
@@ -44,18 +44,17 @@ function addUser(socket, user) {
     conns[userId] = socket.id; // client id
     if (user.type === config.roleType.patient) {
       offlineMessage[userId] = 0; // 设置离线未读消息数
-      console.log('offlineMessage ' + userId + ':' + offlineMessage[userId]);
     }
 
-    console.log('register===========================');
-    if (config.debug) {
-      console.info('userIds');
-      console.log(userIds);
-      console.info('users');
-      console.log(users);
-      console.info('conns');
-      console.log(conns);
-    }
+    // console.log(util.now() + 'register===========================');
+    // if (config.debug) {
+    //   console.info('userIds');
+    //   console.log(userIds);
+    //   console.info('users');
+    //   console.log(users);
+    //   console.info('conns');
+    //   console.log(conns);
+    // }
 
     // db select
     if (user.type === config.roleType.nurse) {
@@ -95,7 +94,7 @@ module.exports = function(socket, user) {
 
   var canLogin = uniqueDevice && userIds.indexOf(userId) === -1;
   if (canLogin) {
-    console.log('[Login][' + role + ']' + userId + ':' + username + ' sign in');
+    console.log(util.now() + '[Login][' + config.roles[role] + ']' + userId + ':' + username + ' sign in');
 
     addUser(socket, user);
 
@@ -108,7 +107,7 @@ module.exports = function(socket, user) {
         break;
     }
   } else {
-    console.log('[Login]user is existed');
+    console.log(util.now() + '[Login]user is existed');
     // response
     socket.emit('userExisted');
   }

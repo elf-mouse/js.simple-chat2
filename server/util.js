@@ -1,9 +1,42 @@
 var roleType = config.roleType;
 
+/**
+ * 时间对象的格式化
+ * @format YYYY-mm-dd HH:mm:ss
+ * @usage var now = new Date().format('YYYY-mm-dd HH:ii:ss');
+ */
+Date.prototype.format = function(format) {
+  var o = {
+    'm+': this.getMonth() + 1, // month
+    'd+': this.getDate(), // day
+    'H+': this.getHours(), // hour
+    'i+': this.getMinutes(), // minute
+    's+': this.getSeconds(), // second
+    'q+': Math.floor((this.getMonth() + 3) / 3), // quarter
+    'S': this.getMilliseconds() // millisecond
+  }
+
+  if (/(Y+)/.test(format)) {
+    format = format.replace(RegExp.$1, (this.getFullYear() + '')
+      .substr(4 - RegExp.$1.length));
+  }
+
+  for (var k in o) {
+    if (new RegExp('(' + k + ')').test(format)) {
+      format = format.replace(RegExp.$1, RegExp.$1.length == 1 ? o[k] : ('00' + o[k]).substr(('' + o[k]).length));
+    }
+  }
+  return format;
+};
+
+function now() {
+  return '[' + (new Date()).format('YYYY-mm-dd HH:ii:ss') + ']';
+}
+
 /************************** 登录后更新状态 ******************************/
 
 function updateOnlineUser(socket, isOnline) {
-  console.info('updateOnlineUser');
+  console.info(now() + 'updateOnlineUser');
 
   var user = {
     id: socket[config.pk],
@@ -19,7 +52,7 @@ function updateOnlineUser(socket, isOnline) {
 }
 
 function getOnlineUser(socket) {
-  console.info('getOnlineUser');
+  console.info(now() + 'getOnlineUser');
 
   var onlineUsers = [];
   for (var key in users) {
@@ -71,7 +104,7 @@ function isUniqueBinding(arr, data) {
 }
 
 function updateUserBinding(socket, data, isDelete) {
-  console.info('updateUserBinding');
+  console.info(now() + 'updateUserBinding');
 
   isDelete = isDelete || false;
 
@@ -105,7 +138,7 @@ function updateUserBinding(socket, data, isDelete) {
 /************************** 处理未读消息 ******************************/
 
 function updateUnread(socket, patientId, reset) {
-  console.info('updateUnread');
+  console.info(now() + 'updateUnread');
 
   if (config.debug) {
     console.log('patientId:' + patientId);
@@ -134,6 +167,7 @@ function updateUnread(socket, patientId, reset) {
 
 /************************** export ******************************/
 
+module.exports.now = now;
 module.exports.setLastId = setLastId;
 module.exports.updateOnlineUser = updateOnlineUser;
 module.exports.getOnlineUser = getOnlineUser;

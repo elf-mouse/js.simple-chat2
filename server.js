@@ -10,7 +10,7 @@ global.offlineMessage = {}; // 患者离线消息统计 { patientId: count }
 var event = require('./server/event/index');
 
 io.on('connection', function(socket) {
-  console.info('[Connection]Connection ' + socket.id + ' accepted.');
+  console.info(util.now() + 'Connection ' + socket.id + ' accepted.');
 
   /**
    * [获取当前状态]
@@ -34,7 +34,7 @@ io.on('connection', function(socket) {
    * [离线]
    */
   socket.on('disconnect', function() {
-    console.info('[Disconnect]Connection ' + socket.id + ' terminated.');
+    console.info(util.now() + 'Connection ' + socket.id + ' terminated.');
     event.disconnect(socket);
   });
 

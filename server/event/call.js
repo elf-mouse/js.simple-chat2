@@ -1,7 +1,7 @@
 module.exports = function(socket, patient) {
   var nurseId = socket[config.pk];
   var patientId = patient.id;
-  console.info('[Call]' + nurseId + '<=>' + patientId);
+  console.info(util.now() + '[Call]' + nurseId + '<=>' + patientId);
 
   socket.currentBindingId = patientId; // 当前聊天对象ID
   util.updateUnread(socket, patientId, true); // 未读消息置0

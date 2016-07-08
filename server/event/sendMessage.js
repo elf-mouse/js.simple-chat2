@@ -8,7 +8,7 @@ function getReceiverById(senderId, receiverId) {
   var username = '';
 
   if (receiverId) {
-    console.info('getReceiverById:' + senderId + '->' + receiverId);
+    console.info(util.now() + 'getReceiverById:' + senderId + '->' + receiverId);
 
     for (var key in users) {
       var user = users[key];
@@ -66,7 +66,7 @@ function saveFile(value, data) {
  * @param  {[string]} data    [消息]
  */
 module.exports = function(socket, type, receiverId, data) {
-  console.info('sendMessage');
+  console.info(util.now() + 'sendMessage');
 
   var senderId = socket[config.pk];
   var sender = socket.username;
@@ -108,7 +108,7 @@ module.exports = function(socket, type, receiverId, data) {
 
       if (socket.role === roleType.patient) { // 群发
         offlineMessage[senderId] += 1; // 更新离线未读消息数
-        console.log('offlineMessage ' + senderId + ':' + offlineMessage[senderId]);
+        console.log('OfflineMessage ' + senderId + ':' + offlineMessage[senderId]);
         // response
         socket.to(config.roles[roleType.nurse]).emit(type, {
           senderId: senderId,
@@ -127,13 +127,13 @@ module.exports = function(socket, type, receiverId, data) {
 
     switch (type) {
       case config.chats[chatType.image]: // image
-        console.log('[SendImage]Received image: ' + senderId + ':' + sender + ' to ' + receiverId + ':' + receiver + ' a pic');
+        console.log(util.now() + '[SendImage]Received image: ' + senderId + ':' + sender + ' to ' + receiverId + ':' + receiver + ' a pic');
         value.chat_type = chatType.image;
         // 保持图片至本地
         saveFile(value, data);
         break;
       default: // message
-        console.log('[SendMessage]Received message: ' + senderId + ':' + sender + ' to ' + receiverId + ':' + receiver + ' say ' + value.content);
+        console.log(util.now() + '[SendMessage]Received message: ' + senderId + ':' + sender + ' to ' + receiverId + ':' + receiver + ' say ' + value.content);
         db.writeMessage(value); // insert db
         break;
     }

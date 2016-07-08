@@ -1,6 +1,6 @@
 module.exports = function(socket, patient, nurse) {
   var fromId = socket[config.pk];
-  console.info('[Call Forwarding]' + patient.id + ':' + fromId + '->' + nurse.id);
+  console.info(util.now() + '[Call Forwarding]' + patient.id + ':' + fromId + '->' + nurse.id);
 
   var binding = {
     fromNurse: {
