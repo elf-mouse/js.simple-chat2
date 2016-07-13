@@ -59,11 +59,11 @@ function saveFile(value, data) {
 }
 
 /**
- * [发消息]
- * @param  {[object]} socket
- * @param  {[int]} type       [消息类型]
- * @param  {[int]} receiverId [对方ID]
- * @param  {[string]} data    [消息]
+ * 发消息
+ * @param  {object} socket
+ * @param  {int} type       消息类型
+ * @param  {int} receiverId 对方ID
+ * @param  {string} data    消息
  */
 module.exports = function(socket, type, receiverId, data) {
   console.info(util.now() + 'sendMessage');
