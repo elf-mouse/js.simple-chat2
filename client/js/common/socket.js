@@ -38,7 +38,7 @@ socket.on('message', function(data) {
 
 /**
  * 接收历史消息
- * @param  {[array]} data 消息列表
+ * @param  {array} data 消息列表
  */
 socket.on('loadMessage', function(data) {
   console.log('成功接收历史消息');

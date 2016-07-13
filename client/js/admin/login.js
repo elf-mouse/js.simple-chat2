@@ -52,7 +52,7 @@ socket.on('updateOnlineUser', function(user) {
 
 /**
  * 获取在线状态
- * @param  {[array]} users 在线患者列表
+ * @param  {array} users 在线患者列表
  */
 socket.on('getOnlineUser', function(users) {
   console.log(users);
