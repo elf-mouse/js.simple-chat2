@@ -13,6 +13,13 @@ socket.on('connect', function() {
   console.log('connect...');
 });
 
+socket.on('auth', function() {
+  console.log('check auth again');
+
+  var token = 'NmIzZGY3NzE3OTNmMTA2OTlmZjRkNTE0NjgzOTk2NzE=';
+  socket.emit('auth', token);
+});
+
 // 获取当前状态
 socket.on('status', function(data) {
   console.log('[Status]当前用户:' + data.currentUser);

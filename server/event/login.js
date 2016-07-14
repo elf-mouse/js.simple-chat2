@@ -72,6 +72,7 @@ function addUser(socket, user) {
       });
     }
   } else {
+    console.error('login:disallow');
     // response
     socket.emit('system', 'disallow');
   }

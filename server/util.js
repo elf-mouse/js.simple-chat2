@@ -1,3 +1,5 @@
+var disconnect = require('./event/disconnect');
+
 var roleType = config.roleType;
 
 /**
@@ -31,6 +33,19 @@ Date.prototype.format = function(format) {
 
 function now() {
   return '[' + (new Date()).format('YYYY-mm-dd HH:ii:ss') + ']';
+}
+
+function checkAuth(socket, fn) {
+  var currentTime = new Date().getTime();
+  if (socket && socket.auth && currentTime < socket.authExpiry) {
+    fn();
+  } else {
+    console.error('auth:disallow');
+    // response
+    socket.emit('system', 'disallow');
+    // 关闭连接
+    disconnect(socket);
+  }
 }
 
 /************************** 登录后更新状态 ******************************/
@@ -168,6 +183,7 @@ function updateUnread(socket, patientId, reset) {
 /************************** export ******************************/
 
 module.exports.now = now;
+module.exports.checkAuth = checkAuth;
 module.exports.setLastId = setLastId;
 module.exports.updateOnlineUser = updateOnlineUser;
 module.exports.getOnlineUser = getOnlineUser;

@@ -8,9 +8,13 @@ function clean(socket) {
       break;
     }
   }
+
   delete users[userId];
   delete conns[userId];
   socket.leave(socket.room);
+  if (socket.authTimeoutId) {
+    clearTimeout(socket.authTimeoutId);
+  }
 
   if (config.debug) {
     console.info('userIds');
@@ -26,6 +30,7 @@ module.exports = function(socket) {
   clean(socket);
 
   if (socket.role === config.roleType.patient) {
+    console.info('patient is offline');
     util.updateOnlineUser(socket, false); // offline
   }
 };

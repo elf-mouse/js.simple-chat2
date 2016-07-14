@@ -2,10 +2,13 @@ var data = {
   patient: [{
     id: 1,
     username: '用户-甲',
+    type: 0,
+    tag_id: 1,
     binding: {
       id: 7,
       username: '秘书-C'
-    }
+    },
+    token: 'NmIzZGY3NzE3OTNmMTA2OTlmZjRkNTE0NjgzOTk2NzE='
   }, {
     id: 2,
     username: '用户-乙',

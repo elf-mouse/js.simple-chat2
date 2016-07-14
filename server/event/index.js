@@ -1,4 +1,5 @@
 module.exports.getStatus = require('./getStatus');
+module.exports.auth = require('./auth');
 module.exports.login = require('./login');
 module.exports.disconnect = require('./disconnect');
 module.exports.sendMessage = require('./sendMessage');

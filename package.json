@@ -4,6 +4,7 @@
   "description": "Simple Chat II",
   "author": "Elf-mousE",
   "dependencies": {
+    "md5": "^2.1.0",
     "mongoose": "^4.4.20",
     "socket.io": "^1.4.6"
   },
