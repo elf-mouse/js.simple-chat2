@@ -26,6 +26,16 @@ function addUser(socket, user) {
     }
   }
 
+  if (!socket.role) {
+    allow = false;
+    console.error('undefined role');
+  }
+
+  if (userIds.indexOf(socket[config.pk]) > -1) {
+    allow = false;
+    console.error('user is login');
+  }
+
   if (allow) {
     var roleName = config.roles[user.type];
 
@@ -93,8 +103,7 @@ module.exports = function(socket, user) {
     }
   }
 
-  var canLogin = uniqueDevice && userIds.indexOf(userId) === -1;
-  if (canLogin) {
+  if (uniqueDevice) {
     console.log(util.now() + '[Login][' + config.roles[role] + ']' + userId + ':' + username + ' sign in');
 
     addUser(socket, user);
@@ -108,7 +117,7 @@ module.exports = function(socket, user) {
         break;
     }
   } else {
-    console.log(util.now() + '[Login]user is existed');
+    console.log(util.now() + '[Login]device is login');
     // response
     socket.emit('userExisted');
   }
