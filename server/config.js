@@ -40,6 +40,18 @@ var ROLES = ['zero', 'patient', 'nurse']; // zero暂时无效
 
 var UPLOAD_DIR = __dirname + '/../uploads/';
 
+// 系统消息类型
+var SYSTEM = {
+  login: {
+    disallow: 0,
+  },
+  auth: {
+    invalid: 1,
+    failure: 2,
+    expiry: 3
+  }
+};
+
 module.exports.debug = DEBUG;
 module.exports.server = SERVER;
 module.exports.auth = AUTH;
@@ -50,3 +62,4 @@ module.exports.chats = CHATS;
 module.exports.roleType = ROLE_TYPE;
 module.exports.roles = ROLES;
 module.exports.uploadDir = UPLOAD_DIR;
+module.exports.system = SYSTEM;

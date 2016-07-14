@@ -38,7 +38,7 @@ function checkAuth(socket, token) {
     // 认证失败
     console.warn('auth failure');
     // response
-    socket.emit('system', 'auth:failure');
+    socket.emit('system', config.system.auth.failure);
     // 关闭连接
     disconnect(socket);
   }
@@ -65,7 +65,7 @@ module.exports = function(socket, token, userId) {
       } else { // 无效用户ID
         console.warn('Invalid uid');
         // response
-        socket.emit('system', 'auth:invalid');
+        socket.emit('system', config.system.auth.invalid);
         // 关闭连接
         disconnect(socket);
       }
@@ -75,7 +75,7 @@ module.exports = function(socket, token, userId) {
   } else { // 无效Token
     console.warn('Invalid token');
     // response
-    socket.emit('system', 'auth:invalid');
+    socket.emit('system', config.system.auth.invalid);
     // 关闭连接
     disconnect(socket);
   }

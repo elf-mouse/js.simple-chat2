@@ -40,9 +40,9 @@ function checkAuth(socket, fn) {
   if (socket && socket.auth && currentTime < socket.authExpiry) {
     fn();
   } else {
-    console.error('auth:disallow');
+    console.error('auth:expiry');
     // response
-    socket.emit('system', 'disallow');
+    socket.emit('system', config.system.auth.expiry);
     // 关闭连接
     disconnect(socket);
   }
