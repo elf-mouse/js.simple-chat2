@@ -9,11 +9,11 @@ module.exports = function(socket, patient) {
   var binding = {
     nurse: {
       id: socket[config.pk],
-      username: socket.username
+      name: socket.username
     },
     patient: {
       id: patientId,
-      username: patient.username
+      name: patient.name
     }
   };
 

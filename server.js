@@ -29,8 +29,12 @@ io.on('connection', function(socket) {
    * @param  {object} user 用户信息
    */
   socket.on('login', function(user) {
-    if (event.auth(socket, user.token)) {
+    if (config.auth.close) {
       event.login(socket, user);
+    } else {
+      if (event.auth(socket, user.token)) {
+        event.login(socket, user);
+      }
     }
   });
 

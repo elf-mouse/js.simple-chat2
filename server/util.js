@@ -36,15 +36,19 @@ function now() {
 }
 
 function checkAuth(socket, fn) {
-  var currentTime = new Date().getTime();
-  if (socket && socket.auth && currentTime < socket.authExpiry) {
+  if (config.auth.close) {
     fn();
   } else {
-    console.error('auth:expiry');
-    // response
-    socket.emit('system', config.system.auth.expiry);
-    // 关闭连接
-    disconnect(socket);
+    var currentTime = new Date().getTime();
+    if (socket && socket.auth && currentTime < socket.authExpiry) {
+      fn();
+    } else {
+      console.error('auth:expiry');
+      // response
+      socket.emit('system', config.system.auth.expiry);
+      // 关闭连接
+      disconnect(socket);
+    }
   }
 }
 
@@ -77,7 +81,7 @@ function getOnlineUser(socket) {
       console.log(user.type === roleType.patient);
     }
     if (user.type === roleType.patient) {
-      onlineUsers.push(user.username);
+      onlineUsers.push(user.name);
     }
   }
 
@@ -143,7 +147,10 @@ function updateUserBinding(socket, data, isDelete) {
       }
 
       users[key].binding = user.binding;
-      socket.binding = user.binding;
+      socket.binding = {
+        id: user.binding.id,
+        username: user.binding.name
+      };
 
       break;
     }

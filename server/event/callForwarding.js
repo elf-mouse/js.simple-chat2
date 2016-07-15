@@ -5,15 +5,15 @@ module.exports = function(socket, patient, nurse) {
   var binding = {
     fromNurse: {
       id: socket[config.pk],
-      username: socket.username
+      name: socket.username
     },
     patient: {
       id: patient.id,
-      username: patient.username
+      name: patient.name
     },
     toNurse: {
       id: nurse.id,
-      username: nurse.username
+      name: nurse.name
     }
   };
 

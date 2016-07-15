@@ -18,11 +18,22 @@ function addUser(socket, user) {
   // for local
   var allow = false;
   for (var field in userModel) {
+    var key;
+    var value;
     if (userModelKeys.indexOf(field) > -1) { // 检查数据格式
       allow = true;
-      var key = (field === 'id' || field === 'type') ? userModel[field] : field;
-      var value = user[field];
-      socket[key] = value; // e.g. socket.username = user.username
+      if (typeof userModel[field] === 'string') {
+        key = userModel[field];
+        value = user[field];
+        socket[key] = value; // e.g. socket.username = user.name
+      } else {
+        socket[field] = {}; // e.g. socket.binding = {}
+        for (var field2 in userModel[field]) {
+          key = userModel[field][field2];
+          value = user[field][field2];
+          socket[field][key] = value;
+        }
+      }
     }
   }
 
@@ -56,15 +67,15 @@ function addUser(socket, user) {
       offlineMessage[userId] = 0; // 设置离线未读消息数
     }
 
-    // console.log(util.now() + 'register===========================');
-    // if (config.debug) {
-    //   console.info('userIds');
-    //   console.log(userIds);
-    //   console.info('users');
-    //   console.log(users);
-    //   console.info('conns');
-    //   console.log(conns);
-    // }
+    console.log(util.now() + 'register===========================');
+    if (config.debug) {
+      console.info('userIds');
+      console.log(userIds);
+      console.info('users');
+      console.log(users);
+      console.info('conns');
+      console.log(conns);
+    }
 
     // db select
     if (user.type === config.roleType.nurse) {
@@ -92,7 +103,7 @@ module.exports = function(socket, user) {
   user.type = +user.type; // important
   var role = user.type;
   var userId = user.id;
-  var username = user.username;
+  var username = user.name;
 
   // 防止设备重复登录
   var uniqueDevice = true;

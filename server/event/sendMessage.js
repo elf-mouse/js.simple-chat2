@@ -1,8 +1,5 @@
-var model = require('../model');
-
 var chatType = config.chatType;
 var roleType = config.roleType;
-var userModel = model.user;
 
 function getReceiverById(senderId, receiverId) {
   var username = '';
@@ -13,21 +10,21 @@ function getReceiverById(senderId, receiverId) {
     for (var key in users) {
       var user = users[key];
       if (user.id == receiverId) {
-        username = user[userModel.username];
+        username = user.name;
         break;
       }
 
       if (user.id == senderId) {
-        switch (user[userModel.role]) {
+        switch (user.type) {
           case roleType.patient:
-            if (user.binding[userModel.binding.id] == receiverId) {
-              username = user.binding[userModel.binding.username];
+            if (user.binding.id == receiverId) {
+              username = user.binding.name;
             }
             break;
           case roleType.nurse:
             for (var binding of user.binding) {
-              if (binding[userModel.binding.id] == receiverId) {
-                username = binding[userModel.binding.username];
+              if (binding.id == receiverId) {
+                username = binding.name;
               }
             }
             break;

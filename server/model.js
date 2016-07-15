@@ -1,13 +1,13 @@
-// key为客户端的字段名
-// value为服务端的字段名
+// key为客户端（来源于MySQL）的字段名
+// value为聊天服务端的字段名
 var user = {
   id: config.pk,
-  username: 'username',
+  name: 'username',
   type: 'role',
   tag_id: 'tag_id', // 2016.07.07 新增 `分组ID`
   binding: {
     id: 'id',
-    username: 'username'
+    name: 'username'
   }
 };
 
