@@ -17,12 +17,12 @@ document.getElementById('login').addEventListener('click', function() {
 
 // 断线
 socket.on('disconnected', function() {
-  console.log(user.id + ':' + user.username + ' is offline');
+  console.log(user.id + ':' + user.name + ' is offline');
 });
 
 // 已登录
 socket.on('userExisted', function() {
-  console.log(user.id + ':' + user.username + ' userExisted');
+  console.log(user.id + ':' + user.name + ' userExisted');
 });
 
 /**
@@ -30,13 +30,18 @@ socket.on('userExisted', function() {
  * @param  {[array]} data 消息列表
  */
 socket.on('loginSuccess', function(data) {
-  console.log(user.id + ':' + user.username + ' loginSuccess');
+  console.log(user.id + ':' + user.name + ' loginSuccess');
 
   window.user = user;
   console.log(window.user);
 
-  initMessage();
-  loadMessage(data);
+  if (data.length) {
+    data.map(function(item) {
+      if (item.unread) {
+        document.getElementById('msg-' + item.id).innerHTML = item.unread;
+      }
+    });
+  }
 });
 
 /**
@@ -84,6 +89,6 @@ socket.on('getOnlineUser', function(users) {
     // 转接用户
     // socket.emit('callForwarding', data.patient[3], data.nurse[0]);
 
-    console.log('当前聊天对象' + receiver.id + ':' + receiver.username);
+    console.log('当前聊天对象' + receiver.id + ':' + receiver.name);
   }, false);
 });

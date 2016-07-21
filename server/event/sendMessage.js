@@ -67,74 +67,109 @@ module.exports = function(socket, type, receiverId, data) {
 
   var senderId = socket[config.pk];
   var sender = socket.username;
+  var groupId = socket.tag_id;
 
   if (senderId) { // sender已登录
     var socketId;
-    var receiver = getReceiverById(senderId, receiverId);
-    var unread = 0;
-
-    if (!receiver) {
-      console.warn('[WARNING]no receiver be found');
-    }
+    var canSave = true;
 
     switch (socket.role) {
       case roleType.patient:
         console.log('patient send a message');
-        socketId = socket.binding && socket.binding.id ? conns[socket.binding.id] : null;
+        if (socket.binding && socket.binding.id) {
+          socketId = conns[socket.binding.id];
+          receiverId = socket.binding.id;
+        } else {
+          socketId = null;
+          receiverId = 0;
+        }
         break;
       case roleType.nurse:
+        if (!receiverId) {
+          canSave = false;
+          console.error('[ERROR]no receiver be found');
+        }
         console.log('nurse send a message');
         socketId = conns[receiverId] || null;
         break;
     }
 
-    if (socketId) { // receiver在线
-      if (socket.role === roleType.patient && receiver) { // 患者 -> 秘书 => nurse.unread[patientId]++
-        unread = util.updateUnread(io.sockets.connected[socketId], senderId);
-      } else { // 秘书 -> 患者 => nurse.unread[patientId] = 0
-        unread = util.updateUnread(socket, receiverId, true);
-      }
-      // response
-      io.sockets.connected[socketId].emit(type, {
-        senderId: senderId,
-        message: data,
-        unread: unread
-      });
-    } else { // receiver离线
-      console.log('user is offline');
-
-      if (socket.role === roleType.patient) { // 群发
-        offlineMessage[senderId] += 1; // 更新离线未读消息数
-        console.log('OfflineMessage ' + senderId + ':' + offlineMessage[senderId]);
-        // response
-        socket.to(config.roles[roleType.nurse]).emit(type, {
-          senderId: senderId,
-          message: data,
-          unread: offlineMessage[senderId]
-        });
-      }
+    var receiver = getReceiverById(senderId, receiverId);
+    if (!receiver) {
+      console.warn('[WARNING]receiver is offline');
     }
 
-    var value = {
-      sender_id: senderId,
-      receiver_id: receiverId,
-      chat_type: chatType.message,
-      content: data
-    };
+    if (canSave) {
+      if (socketId) { // receiver在线
+        if (socket.role === roleType.patient) { // 患者 -> 秘书 => nurse.unread[patientId]++
+          console.log('msg: patient -> nurse');
+          store.get(receiverId, senderId, function(unread) {
+            if (!unread) {
+              store.add(receiverId, senderId);
+              // response
+              io.sockets.connected[socketId].emit(type, {
+                senderId: senderId,
+                message: data,
+                unread: 1
+              });
+            } else {
+              store.update(receiverId, senderId);
+              // response
+              unread += 1;
+              io.sockets.connected[socketId].emit(type, {
+                senderId: senderId,
+                message: data,
+                unread: unread
+              });
+            }
+          });
+        } else { // 秘书 -> 患者 => nurse.unread[patientId] = 0
+          console.log('msg: nurse -> patient');
+          store.delete(senderId, receiverId);
+          // response
+          io.sockets.connected[socketId].emit(type, {
+            senderId: senderId,
+            message: data,
+            unread: 0
+          });
+        }
+      } else { // receiver离线
+        console.log('user is offline');
 
-    switch (type) {
-      case config.chats[chatType.image]: // image
-        console.log(util.now() + '[SendImage]Received image: ' + senderId + ':' + sender + ' to ' + receiverId + ':' + receiver + ' a pic');
-        value.chat_type = chatType.image;
-        // 保持图片至本地
-        saveFile(value, data);
-        break;
-      default: // message
-        console.log(util.now() + '[SendMessage]Received message: ' + senderId + ':' + sender + ' to ' + receiverId + ':' + receiver + ' say ' + value.content);
-        db.writeMessage(value); // insert db
-        break;
+        if (socket.role === roleType.patient) { // 群发
+          offlineMessage[senderId] += 1; // 更新离线未读消息数
+          console.log('OfflineMessage ' + senderId + ':' + offlineMessage[senderId]);
+          // response
+          socket.to(config.roles[roleType.nurse]).emit(type, {
+            groupId: groupId,
+            senderId: senderId,
+            message: data,
+            unread: offlineMessage[senderId]
+          });
+        }
+      }
+
+      var value = {
+        sender_id: senderId,
+        receiver_id: receiverId,
+        chat_type: chatType.message,
+        content: data
+      };
+
+      switch (type) {
+        case config.chats[chatType.image]: // image
+          console.log(util.now() + '[SendImage]Received image: ' + senderId + ':' + sender + ' to ' + receiverId + ':' + receiver + ' a pic');
+          value.chat_type = chatType.image;
+          // 保持图片至本地
+          saveFile(value, data);
+          break;
+        default: // message
+          console.log(util.now() + '[SendMessage]Received message: ' + senderId + ':' + sender + ' to ' + receiverId + ':' + receiver + ' say ' + value.content);
+          db.writeMessage(value); // insert db
+          break;
+      }
     }
   } else {
-    console.log('user is unlogin');
+    console.error('user is unlogin');
   }
 };

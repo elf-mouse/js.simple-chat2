@@ -5,6 +5,7 @@ var SERVER = {
 };
 
 var AUTH = {
+  close: false, // 无需认证 仅开发测试用
   delay: 3000, // 检查认证3秒内无响应将自动断线
   expiry: { // 随机检查认证时间范围（单位：分）
     min: 10,
@@ -21,7 +22,15 @@ var DB = {
   messageCount: 20 // 每次读取消息条数
 };
 
+var REDIS = {
+  user: '',
+  password: '',
+  host: '127.0.0.1',
+  port: 6379
+};
+
 DB.auth = (DB.user && DB.pass) ? (DB.user + ':' + DB.pass + '@') : '';
+REDIS.options = {}; // TODO
 
 var PRIMARY_KEY = 'uid';
 
@@ -56,6 +65,7 @@ module.exports.debug = DEBUG;
 module.exports.server = SERVER;
 module.exports.auth = AUTH;
 module.exports.db = DB;
+module.exports.redis = REDIS;
 module.exports.pk = PRIMARY_KEY;
 module.exports.chatType = CHAT_TYPE;
 module.exports.chats = CHATS;

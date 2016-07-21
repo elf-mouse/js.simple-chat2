@@ -3,8 +3,7 @@ module.exports = function(socket, patient) {
   var patientId = patient.id;
   console.info(util.now() + '[Call]' + nurseId + '<=>' + patientId);
 
-  socket.currentBindingId = patientId; // 当前聊天对象ID
-  util.updateUnread(socket, patientId, true); // 未读消息置0
+  store.delete(nurseId, patientId);
 
   var binding = {
     nurse: {
@@ -24,7 +23,7 @@ module.exports = function(socket, patient) {
   });
 
   if (config.debug) {
-    console.info('nurse binding');
+    console.info('nurse binding====================');
     console.log(socket.binding);
   }
 

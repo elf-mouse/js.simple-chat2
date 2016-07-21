@@ -1,6 +1,5 @@
 var mongoose = require('./conn');
 var table = require('./table');
-var common = require('./common');
 
 var chatSchema = mongoose.Schema(table.chat);
 var Chat = mongoose.model('Chat', chatSchema);
@@ -24,22 +23,77 @@ function writeMessage(data) {
  * 获取患者消息
  */
 function getPatientMessage(patientId, lastId, callback) {
-  var query = Chat.find({ $or: [{ sender_id: patientId }, { receiver_id: patientId }] });
+  var query = Chat.find({
+    $or: [
+      { sender_id: patientId },
+      { receiver_id: patientId }
+    ]
+  });
 
   if (lastId || false) {
     query.where('_id').lt(lastId);
   }
 
-  common.readMessage(query, false, callback);
+  var options = {
+    select: 'sender_id receiver_id chat_type content created_at',
+    sort: { created_at: -1 }
+  };
+
+  options.limit = config.db.messageCount;
+
+  query
+    .limit(options.limit)
+    .sort(options.sort)
+    .select(options.select)
+    .exec(function(err, data) {
+      if (err) {
+        console.error('[DB]' + err);
+        callback([]);
+      } else {
+        var result = [];
+        for (var item of data) {
+          var value = {
+            id: item._id,
+            senderId: item.sender_id,
+            receiverId: item.receiver_id,
+            chatType: item.chat_type,
+            content: item.content, // TODO: 图片路径未处理
+            created: new Date(item.created_at).getTime() // 转时间戳
+          };
+          result.push(value);
+        }
+        callback(result);
+      }
+    });
 }
 
 /**
  * 获取全部离线消息
  */
-function getAllOfflineMessage(callback) {
-  var query = Chat.where({ receiver_id: 0 });
+function getOfflineMessageCount(callback) {
+  var options = [{
+    $match: { receiver_id: 0 }
+  }, {
+    $group: {
+      _id: "$sender_id",
+      message_count: { $sum: 1 }
+    }
+  }];
 
-  common.readMessage(query, true, callback);
+  Chat.aggregate(options, function(err, data) {
+    if (err) {
+      console.error('[DB]' + err);
+    }
+    var result = [];
+    for (var item of data) {
+      var value = {
+        id: item._id,
+        unread: item.message_count
+      };
+      result.push(value);
+    }
+    callback(result);
+  });
 }
 
 /**
@@ -63,6 +117,5 @@ function updateOfflineMessage(patientId, nurseId) {
 
 module.exports.writeMessage = writeMessage;
 module.exports.getPatientMessage = getPatientMessage;
-// module.exports.getNurseMessage = getNurseMessage;
-module.exports.getAllOfflineMessage = getAllOfflineMessage;
+module.exports.getOfflineMessageCount = getOfflineMessageCount;
 module.exports.updateOfflineMessage = updateOfflineMessage;

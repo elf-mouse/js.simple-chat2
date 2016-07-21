@@ -36,7 +36,8 @@ socket.on('status', function(data) {
  * data.unread 未读消息
  */
 socket.on('message', function(data) {
-  console.log('成功接收消息');
+  console.info('成功接收消息');
+  console.log(data);
   if (data.unread && document.getElementById('msg-' + data.senderId)) {
     document.getElementById('msg-' + data.senderId).innerHTML = data.unread;
   }

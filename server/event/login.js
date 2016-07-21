@@ -53,10 +53,6 @@ function addUser(socket, user) {
     socket.room = roleName;
     socket.join(roleName); // 分组
     socket.canLoad = true; // for load message
-    if (user.type === config.roleType.nurse) {
-      socket.currentBindingId = 0; // 当前聊天对象ID
-      socket.unread = {}; // 未读消息
-    }
 
     // for global
     var userId = socket[config.pk];
@@ -76,13 +72,17 @@ function addUser(socket, user) {
       console.info('conns');
       console.log(conns);
     }
+    console.log('register end===========================');
 
     // db select
     if (user.type === config.roleType.nurse) {
       console.log('nurse get message');
-      db.getAllOfflineMessage(function(data) { // 秘书登录后获取全部离线消息
-        // response
-        socket.emit('loginSuccess', data);
+      db.getOfflineMessageCount(function(data) { // 秘书登录后获取全部离线消息统计
+        store.getAll(userId, function(res) {
+          var result = data.concat(res).uniqueId();
+          // response
+          socket.emit('loginSuccess', result);
+        });
       });
     } else {
       console.log('patient get message');

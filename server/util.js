@@ -3,6 +3,21 @@ var disconnect = require('./event/disconnect');
 var roleType = config.roleType;
 
 /**
+ * 未读消息去重
+ */
+Array.prototype.uniqueId = function() {
+  var a = this.concat();
+  for (var i = 0; i < a.length; ++i) {
+    for (var j = i + 1; j < a.length; ++j) {
+      if (a[i].id === a[j].id)
+        a.splice(j--, 1);
+    }
+  }
+
+  return a;
+};
+
+/**
  * 时间对象的格式化
  * @format YYYY-mm-dd HH:mm:ss
  * @usage var now = new Date().format('YYYY-mm-dd HH:ii:ss');
@@ -142,49 +157,19 @@ function updateUserBinding(socket, data, isDelete) {
             user.binding.push(data.binding);
           }
         }
+        users[key].binding = user.binding;
+        socket.binding = users[key].binding;
       } else {
         user.binding = data.binding; // 新增/修改
+        users[key].binding = user.binding;
+        socket.binding = {
+          id: user.binding.id,
+          username: user.binding.name
+        };
       }
-
-      users[key].binding = user.binding;
-      socket.binding = {
-        id: user.binding.id,
-        username: user.binding.name
-      };
-
       break;
     }
   }
-}
-
-/************************** 处理未读消息 ******************************/
-
-function updateUnread(socket, patientId, reset) {
-  console.info(now() + 'updateUnread');
-
-  if (config.debug) {
-    console.log('patientId:' + patientId);
-    console.log('currentBindingId:' + socket.currentBindingId);
-  }
-
-  reset = reset || false;
-
-  if (reset || !patientId || patientId === socket.currentBindingId) {
-    console.log('=0');
-    socket.unread[patientId] = 0;
-  } else {
-    if (!socket.unread[patientId]) {
-      console.log('=1');
-      socket.unread[patientId] = 1;
-    } else {
-      console.log('+=1');
-      socket.unread[patientId] += 1;
-    }
-  }
-
-  console.log(socket.unread[patientId]);
-
-  return socket.unread[patientId];
 }
 
 /************************** export ******************************/
@@ -195,4 +180,3 @@ module.exports.setLastId = setLastId;
 module.exports.updateOnlineUser = updateOnlineUser;
 module.exports.getOnlineUser = getOnlineUser;
 module.exports.updateUserBinding = updateUserBinding;
-module.exports.updateUnread = updateUnread;
