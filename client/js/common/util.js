@@ -66,14 +66,13 @@ function initMessage() {
 
 // 加载历史聊天记录
 function loadMessage(data) {
+  // TODO 客户端处理没有更多消息
   if (!data.length) {
     window.hasMessage = false;
     console.log('没有更多消息');
   }
 
   if (window.hasMessage) {
-    console.log(data);
-
     var tpl = '<p class="time">时间 xxxx-xx-xx</p>';
 
     for (var i = data.length - 1; i >= 0; i--) {

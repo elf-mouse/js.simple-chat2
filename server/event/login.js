@@ -61,6 +61,8 @@ function addUser(socket, user) {
     conns[userId] = socket.id; // client id
     if (user.type === config.roleType.patient) {
       offlineMessage[userId] = 0; // 设置离线未读消息数
+    } else {
+      socket.currentPatientId = 0; // 当前聊天患者ID
     }
 
     console.log(util.now() + 'register===========================');

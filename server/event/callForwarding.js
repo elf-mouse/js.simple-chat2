@@ -27,6 +27,8 @@ module.exports = function(socket, patient, nurse) {
     console.log('from nurse binding', socket.binding);
   }
 
+  DB.store.delete(binding.fromNurse.id, binding.patient.id); // 转接口删除未读消息统计
+
   var patientSocketId = conns[binding.patient.id];
   if (patientSocketId) {
     util.updateUserBinding(io.sockets.connected[patientSocketId], {
