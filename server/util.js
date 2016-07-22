@@ -2,6 +2,8 @@ var disconnect = require('./event/disconnect');
 
 var roleType = config.roleType;
 
+/************************** 通用方法 ******************************/
+
 /**
  * 未读消息去重
  */
@@ -50,6 +52,34 @@ function now() {
   return '[' + (new Date()).format('YYYY-mm-dd HH:ii:ss') + ']';
 }
 
+/**
+ * 追加自动回复
+ */
+function appendAutoreply(receiverId, historyMessage, autoreplyMessage) {
+  var date = new Date();
+  var week = date.getDay();
+  var isWeekend = !(week >= autoreplyMessage.start_week && week <= autoreplyMessage.end_week);
+
+  isWeekend = true;
+
+  if (isWeekend) {
+    var output = autoreplyMessage.content.replace(/\[workhours\]/g, '[工作日：周' + config.week[autoreplyMessage.start_week] + '到周' + config.week[autoreplyMessage.end_week] + ' ' + autoreplyMessage.start_time + '-' + autoreplyMessage.end_time + ']');
+
+    historyMessage.push({
+      id: 0,
+      senderId: 0, // 系统消息
+      receiverId: receiverId,
+      chatType: config.chatType.message,
+      content: output,
+      created: new Date().getTime()
+    });
+  }
+
+  return historyMessage;
+}
+
+/************************** 检查权限 ******************************/
+
 function checkAuth(socket, fn) {
   if (config.auth.close) {
     fn();
@@ -91,17 +121,17 @@ function getOnlineUser(socket) {
   var onlineUsers = [];
   for (var key in users) {
     var user = users[key];
-    if (config.debug) {
-      console.log(user.type + ':' + roleType.patient);
-      console.log(user.type === roleType.patient);
-    }
+    // if (config.debug) {
+    //   console.log(user.type + ':' + roleType.patient);
+    //   console.log(user.type === roleType.patient);
+    // }
     if (user.type === roleType.patient) {
       onlineUsers.push(user.name);
     }
   }
 
   if (config.debug) {
-    console.log(onlineUsers);
+    console.log('onlineUsers', onlineUsers);
   }
   // response
   socket.emit('getOnlineUser', onlineUsers);
@@ -112,12 +142,12 @@ function getOnlineUser(socket) {
 function setLastId(socket, data) {
   if (data.length) {
     var lastMessage = data[data.length - 1];
-    if (config.debug) {
-      console.info('last id');
-      console.log(socket.lastId);
-      console.info('last message');
-      console.log(lastMessage);
-    }
+    // if (config.debug) {
+    //   console.info('last id');
+    //   console.log(socket.lastId);
+    //   console.info('last message');
+    //   console.log(lastMessage);
+    // }
     socket.lastId = lastMessage ? lastMessage.id : 0;
   }
 }
@@ -175,6 +205,7 @@ function updateUserBinding(socket, data, isDelete) {
 /************************** export ******************************/
 
 module.exports.now = now;
+module.exports.appendAutoreply = appendAutoreply;
 module.exports.checkAuth = checkAuth;
 module.exports.setLastId = setLastId;
 module.exports.updateOnlineUser = updateOnlineUser;

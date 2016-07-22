@@ -8,7 +8,7 @@ module.exports = function(socket, patientId) {
     if (socket.role === config.roleType.nurse && !patientId) {
       console.warn('Missing parameters');
     } else {
-      db.getPatientMessage(patientId || socket[config.pk], socket.lastId, function(data) {
+      DB.query.getPatientMessage(patientId || socket[config.pk], socket.lastId, function(data) {
         if (data.length) {
           util.setLastId(socket, data);
           // response

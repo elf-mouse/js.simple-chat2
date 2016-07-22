@@ -3,7 +3,7 @@ module.exports = function(socket, patient) {
   var patientId = patient.id;
   console.info(util.now() + '[Call]' + nurseId + '<=>' + patientId);
 
-  store.delete(nurseId, patientId);
+  DB.store.delete(nurseId, patientId);
 
   var binding = {
     nurse: {
@@ -23,8 +23,7 @@ module.exports = function(socket, patient) {
   });
 
   if (config.debug) {
-    console.info('nurse binding====================');
-    console.log(socket.binding);
+    console.log('nurse binding', socket.binding);
   }
 
   var patientSocketId = conns[binding.patient.id];
@@ -37,11 +36,10 @@ module.exports = function(socket, patient) {
     });
 
     if (config.debug) {
-      console.info('patient binding');
-      console.log(toSocket.binding);
+      console.log('patient binding', toSocket.binding);
     }
   }
 
   offlineMessage[binding.patient.id] = 0; // 重置离线未读消息数
-  db.updateOfflineMessage(binding.patient.id, binding.nurse.id);
+  DB.query.updateOfflineMessage(binding.patient.id, binding.nurse.id);
 };

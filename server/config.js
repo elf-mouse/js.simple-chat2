@@ -13,13 +13,14 @@ var AUTH = {
   }
 };
 
-var DB = {
+var MONGO = {
   user: '',
   pass: '',
   host: 'localhost',
   port: 27017,
   name: 'test',
-  messageCount: 20 // 每次读取消息条数
+  messageCount: 20, // 每次读取消息条数
+  autoreplyId: 1 // WEB后台配置固定ID为1
 };
 
 var REDIS = {
@@ -29,7 +30,7 @@ var REDIS = {
   port: 6379
 };
 
-DB.auth = (DB.user && DB.pass) ? (DB.user + ':' + DB.pass + '@') : '';
+MONGO.auth = (MONGO.user && MONGO.pass) ? (MONGO.user + ':' + MONGO.pass + '@') : '';
 REDIS.options = {}; // TODO
 
 var PRIMARY_KEY = 'uid';
@@ -61,10 +62,20 @@ var SYSTEM = {
   }
 };
 
+var WEEK = {
+  0: '日',
+  1: '一',
+  2: '二',
+  3: '三',
+  4: '四',
+  5: '五',
+  6: '六'
+};
+
 module.exports.debug = DEBUG;
 module.exports.server = SERVER;
 module.exports.auth = AUTH;
-module.exports.db = DB;
+module.exports.mongo = MONGO;
 module.exports.redis = REDIS;
 module.exports.pk = PRIMARY_KEY;
 module.exports.chatType = CHAT_TYPE;
@@ -73,3 +84,4 @@ module.exports.roleType = ROLE_TYPE;
 module.exports.roles = ROLES;
 module.exports.uploadDir = UPLOAD_DIR;
 module.exports.system = SYSTEM;
+module.exports.week = WEEK;

@@ -24,8 +24,7 @@ module.exports = function(socket, patient, nurse) {
   }, true);
 
   if (config.debug) {
-    console.info('from nurse binding');
-    console.log(socket.binding);
+    console.log('from nurse binding', socket.binding);
   }
 
   var patientSocketId = conns[binding.patient.id];
@@ -37,8 +36,7 @@ module.exports = function(socket, patient, nurse) {
     });
 
     if (config.debug) {
-      console.info('patient binding');
-      console.log(io.sockets.connected[patientSocketId].binding);
+      console.log('patient binding', io.sockets.connected[patientSocketId].binding);
     }
   }
 
@@ -56,8 +54,7 @@ module.exports = function(socket, patient, nurse) {
     });
 
     if (config.debug) {
-      console.info('to nurse binding');
-      console.log(io.sockets.connected[nurseSocketId].binding);
+      console.log('to nurse binding', io.sockets.connected[nurseSocketId].binding);
     }
   }
 };

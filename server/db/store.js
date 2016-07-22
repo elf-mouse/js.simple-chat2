@@ -9,7 +9,7 @@ client.on('error', function(err) {
 });
 
 client.on('connect', function() {
-  console.log('redis connected');
+  console.log('redis connected...');
 });
 
 

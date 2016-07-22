@@ -1,6 +1,9 @@
 global.config = require('./config');
-global.db = require('./db/chat');
-global.store = require('./db/store');
+global.DB = {
+  model: require('./db/model/index'),
+  query: require('./db/query'),
+  store: require('./db/store')
+};
 global.util = require('./util');
 global.io = require('socket.io')(config.server.port);
 global.userIds = []; // 用户ID列表

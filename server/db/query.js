@@ -1,14 +1,8 @@
-var mongoose = require('./conn');
-var table = require('./table');
-
-var chatSchema = mongoose.Schema(table.chat);
-var Chat = mongoose.model('Chat', chatSchema);
-
 /**
  * 写消息
  */
 function writeMessage(data) {
-  var chat = new Chat(data);
+  var chat = new DB.model('chat')(data);
 
   chat.save(function(err) {
     if (err) {
@@ -23,7 +17,7 @@ function writeMessage(data) {
  * 获取患者消息
  */
 function getPatientMessage(patientId, lastId, callback) {
-  var query = Chat.find({
+  var query = DB.model('chat').find({
     $or: [
       { sender_id: patientId },
       { receiver_id: patientId }
@@ -39,7 +33,7 @@ function getPatientMessage(patientId, lastId, callback) {
     sort: { created_at: -1 }
   };
 
-  options.limit = config.db.messageCount;
+  options.limit = config.mongo.messageCount;
 
   query
     .limit(options.limit)
@@ -80,7 +74,7 @@ function getOfflineMessageCount(callback) {
     }
   }];
 
-  Chat.aggregate(options, function(err, data) {
+  DB.model('chat').aggregate(options, function(err, data) {
     if (err) {
       console.error('[DB]' + err);
     }
@@ -104,7 +98,7 @@ function updateOfflineMessage(patientId, nurseId) {
   var update = { $set: { receiver_id: nurseId } };
   var options = { multi: true };
 
-  Chat.where(conditions)
+  DB.model('chat').where(conditions)
     .setOptions(options)
     .update(update, function(err) {
       if (err) {
@@ -115,7 +109,20 @@ function updateOfflineMessage(patientId, nurseId) {
     });
 }
 
+/**
+ * 获取自动回复配置信息
+ */
+function getAutoreply(callback) {
+  DB.model('autoreply').findOne({ id: config.mongo.autoreplyId }).exec(function(err, data) {
+    if (err) {
+      console.error('[DB]' + err);
+    }
+    callback(data);
+  });
+}
+
 module.exports.writeMessage = writeMessage;
 module.exports.getPatientMessage = getPatientMessage;
 module.exports.getOfflineMessageCount = getOfflineMessageCount;
 module.exports.updateOfflineMessage = updateOfflineMessage;
+module.exports.getAutoreply = getAutoreply;

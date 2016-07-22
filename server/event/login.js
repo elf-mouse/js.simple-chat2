@@ -77,19 +77,34 @@ function addUser(socket, user) {
     // db select
     if (user.type === config.roleType.nurse) {
       console.log('nurse get message');
-      db.getOfflineMessageCount(function(data) { // 秘书登录后获取全部离线消息统计
-        store.getAll(userId, function(res) {
+      DB.query.getOfflineMessageCount(function(data) { // 秘书登录后获取全部离线消息统计
+        if (config.debug) {
+          console.log(1, 'offline message', data);
+        }
+        DB.store.getAll(userId, function(res) {
           var result = data.concat(res).uniqueId();
+          if (config.debug) {
+            console.log(2, 'unread message', result);
+          }
           // response
           socket.emit('loginSuccess', result);
         });
       });
     } else {
       console.log('patient get message');
-      db.getPatientMessage(userId, null, function(data) { // 患者登录后获取最近几条聊天记录
+      DB.query.getPatientMessage(userId, null, function(data) { // 患者登录后获取最近几条聊天记录
         util.setLastId(socket, data);
-        // response
-        socket.emit('loginSuccess', data);
+        if (config.debug) {
+          console.log(1, 'history message', data);
+        }
+        DB.query.getAutoreply(function(res) {
+          if (config.debug) {
+            console.log(2, 'autoreply message', res);
+          }
+          var result = util.appendAutoreply(userId, data, res);
+          // response
+          socket.emit('loginSuccess', result);
+        });
       });
     }
   } else {

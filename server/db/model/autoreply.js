@@ -1,19 +1,4 @@
-var chat = {
-  sender_id: Number,
-  receiver_id: {
-    type: Number,
-    default: 0
-  },
-  chat_type: {
-    type: Number,
-    default: config.chatType.message
-  },
-  content: String,
-  created_at: {
-    type: Date,
-    default: Date.now
-  }
-};
+var mongoose = require('../conn');
 
 // 2016.07.21 新增自动回复表
 var autoreply = {
@@ -38,5 +23,7 @@ var autoreply = {
   content: String // 使用时需替换占位符[workhours]
 };
 
-module.exports.chat = chat;
-module.exports.autoreply = autoreply;
+var autoreplySchema = mongoose.Schema(autoreply);
+var Autoreply = mongoose.model('Autoreply', autoreplySchema);
+
+module.exports = Autoreply;
