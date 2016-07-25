@@ -51,7 +51,7 @@ function getPatientMessage(patientId, lastId, callback) {
             senderId: item.sender_id,
             receiverId: item.receiver_id,
             chatType: item.chat_type,
-            content: item.content, // TODO: 图片路径未处理
+            content: (item.chat_type === config.chatType.image) ? config.imageServer.host + config.upload.basePath + item.content : item.content,
             created: new Date(item.created_at).getTime() // 转时间戳
           };
           result.push(value);

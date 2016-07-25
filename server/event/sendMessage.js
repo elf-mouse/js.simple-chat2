@@ -45,7 +45,7 @@ function saveFile(value, data) {
   var filename = date.getTime() + '.png';
 
   var base64Data = data.replace(/^data:image\/png;base64,/, '');
-  require('fs').writeFile(config.uploadDir + filename, base64Data, 'base64', function(err) {
+  require('fs').writeFile(config.upload.uploadPath + filename, base64Data, 'base64', function(err) {
     if (err) {
       throw err;
     }
@@ -74,32 +74,36 @@ module.exports = function(socket, type, receiverId, data) {
     var socketId;
     var canSave = true;
 
-    switch (senderRole) {
-      case roleType.patient:
-        console.log('patient send a message');
-        if (socket.binding && socket.binding.id) {
-          socketId = conns[socket.binding.id];
-          receiverId = socket.binding.id;
-        } else {
-          socketId = null;
-          receiverId = 0;
-        }
-        break;
-      case roleType.nurse:
-        if (!receiverId) {
-          canSave = false;
-          console.error('[ERROR]no receiver be found');
-        }
-        console.log('nurse send a message');
-        socketId = conns[receiverId] || null;
-        break;
-    }
-
-    var receiver = getReceiverById(senderId, receiverId);
-    if (!receiver) {
-      console.warn('[WARNING]receiver is offline');
+    if (!data.trim()) { // 消息不能为空
+      canSave = false;
+      console.warn('[WARNING]empty message');
+      socket.emit('system', config.system.message.empty);
     } else {
+      switch (senderRole) {
+        case roleType.patient:
+          console.log('patient send a message');
+          if (socket.binding && socket.binding.id) {
+            socketId = conns[socket.binding.id];
+            receiverId = socket.binding.id;
+          } else {
+            socketId = null;
+            receiverId = 0;
+          }
+          break;
+        case roleType.nurse:
+          if (!receiverId) {
+            canSave = false;
+            console.error('[ERROR]no receiver be found');
+          }
+          console.log('nurse send a message');
+          socketId = conns[receiverId] || null;
+          break;
+      }
 
+      var receiver = getReceiverById(senderId, receiverId);
+      if (!receiver) {
+        console.warn('[WARNING]receiver is offline');
+      }
     }
 
     if (canSave) {

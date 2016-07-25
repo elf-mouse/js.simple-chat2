@@ -77,7 +77,7 @@ function loadMessage(data) {
 
     for (var i = data.length - 1; i >= 0; i--) {
       var msg = data[i];
-      var content = (msg.chatType == 1) ? msg.content : showEmoji(msg.content); // 图片未处理
+      var content = (msg.chatType == 1) ? '<img src="' + msg.content + '">' : showEmoji(msg.content); // 图片未处理
       tpl += createMessageTpl(msg.senderId, content);
     }
 

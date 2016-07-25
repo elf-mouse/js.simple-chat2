@@ -1,7 +1,11 @@
 var DEBUG = true;
 
-var SERVER = {
+var CHAT_SERVER = {
   port: 8080
+};
+
+var IMAGE_SERVER = {
+  host: ''
 };
 
 var AUTH = {
@@ -48,7 +52,10 @@ var ROLE_TYPE = {
 };
 var ROLES = ['zero', 'patient', 'nurse']; // zero暂时无效
 
-var UPLOAD_DIR = __dirname + '/../uploads/';
+var UPLOAD = {
+  basePath: '/uploads/',
+  uploadPath: __dirname + '/../uploads/'
+};
 
 // 系统消息类型
 var SYSTEM = {
@@ -59,6 +66,9 @@ var SYSTEM = {
     invalid: 1,
     failure: 2,
     expiry: 3
+  },
+  message: {
+    empty: 4
   }
 };
 
@@ -73,7 +83,8 @@ var WEEK = {
 };
 
 module.exports.debug = DEBUG;
-module.exports.server = SERVER;
+module.exports.chatServer = CHAT_SERVER;
+module.exports.imageServer = IMAGE_SERVER;
 module.exports.auth = AUTH;
 module.exports.mongo = MONGO;
 module.exports.redis = REDIS;
@@ -82,6 +93,6 @@ module.exports.chatType = CHAT_TYPE;
 module.exports.chats = CHATS;
 module.exports.roleType = ROLE_TYPE;
 module.exports.roles = ROLES;
-module.exports.uploadDir = UPLOAD_DIR;
+module.exports.upload = UPLOAD;
 module.exports.system = SYSTEM;
 module.exports.week = WEEK;
