@@ -60,12 +60,10 @@ function appendAutoreply(receiverId, historyMessage, autoreplyMessage) {
   var week = date.getDay();
   var isWeekend = !(week >= autoreplyMessage.start_week && week <= autoreplyMessage.end_week);
 
-  isWeekend = true;
-
   if (isWeekend) {
     var output = autoreplyMessage.content.replace(/\[workhours\]/g, '[工作日：周' + config.week[autoreplyMessage.start_week] + '到周' + config.week[autoreplyMessage.end_week] + ' ' + autoreplyMessage.start_time + '-' + autoreplyMessage.end_time + ']');
 
-    historyMessage.push({
+    historyMessage.shift({
       id: 0,
       senderId: 0, // 系统消息
       receiverId: receiverId,
