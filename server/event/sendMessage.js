@@ -116,10 +116,10 @@ module.exports = function(socket, type, receiverId, data) {
             console.log('msg: patient -> nurse');
             DB.store.get(receiverId, senderId, function(unread) {
               if (!unread) {
-                store.add(receiverId, senderId);
+                DB.store.add(receiverId, senderId);
                 unread = 1;
               } else {
-                store.update(receiverId, senderId);
+                DB.store.update(receiverId, senderId);
                 unread += 1;
               }
               // response
