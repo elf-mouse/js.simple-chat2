@@ -60,15 +60,30 @@ var UPLOAD = {
 // 系统消息类型
 var SYSTEM = {
   login: {
-    disallow: 0,
+    disallow: {
+      code: 1000,
+      msg: '禁止登录'
+    },
   },
   auth: {
-    invalid: 1,
-    failure: 2,
-    expiry: 3
+    invalid: {
+      code: 1001,
+      msg: 'Token无效'
+    },
+    failure: {
+      code: 1002,
+      msg: '认证失败'
+    },
+    expiry: {
+      code: 1003,
+      msg: '认证过期'
+    }
   },
   message: {
-    empty: 4
+    empty: {
+      code: 1004,
+      msg: '消息不能为空'
+    }
   }
 };
 
