@@ -4,7 +4,8 @@ var mongoose = require('../conn');
 var autoreply = {
   id: {
     type: Number,
-    default: 0 // WEB后台配置固定ID为1
+    default: 0, // WEB后台配置固定ID为1
+    index: true
   },
   enabled: {
     type: Boolean,
