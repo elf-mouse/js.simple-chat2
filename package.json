@@ -6,7 +6,7 @@
   "dependencies": {
     "hiredis": "^0.5.0",
     "md5": "^2.1.0",
-    "mongoose": "^4.5.4",
+    "mongoose": "^4.5.7",
     "redis": "^2.6.2",
     "socket.io": "^1.4.8"
   },

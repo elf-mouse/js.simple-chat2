@@ -25,8 +25,8 @@ module.exports.add = function(userId, friendId) {
 };
 
 module.exports.delete = function(userId, friendId) {
-  var args = [createKey(userId), 0, friendId];
-  client.zadd(args, function(err, res) {
+  var args = [createKey(userId), friendId];
+  client.zrem(args, function(err, res) {
     if (err) throw err;
   });
 };
