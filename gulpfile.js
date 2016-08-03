@@ -1,7 +1,6 @@
-var balm = require('balm');
+var balm = require('balm-light');
 
 balm.config = {
-  static: true,
   roots: {
     source: 'client'
   },
@@ -12,6 +11,9 @@ balm.config = {
       img: 'img'
     }
   },
+  styles: {
+    ext: 'scss'
+  },
   scripts: {
     entry: {
       'mobile': './client/js/mobile.js',
@@ -20,8 +22,4 @@ balm.config = {
   }
 };
 
-balm.go(function(mix) {
-  if (balm.config.production) {
-    mix.zip();
-  }
-});
+balm.go();

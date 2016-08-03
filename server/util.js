@@ -58,12 +58,26 @@ function now() {
 function appendAutoreply(receiverId, historyMessage, autoreplyMessage) {
   var date = new Date();
   var week = date.getDay();
-  var isWeekend = !(week >= autoreplyMessage.start_week && week <= autoreplyMessage.end_week);
+  var hour = date.getHours();
+  var min = date.getMinutes();
+
+  var isWorkday = week >= autoreplyMessage.start_week && week <= autoreplyMessage.end_week;
+  var startTime = '1970-01-01 ' + autoreplyMessage.start_time + ':00';
+  var endTime = '1970-01-01 ' + autoreplyMessage.end_time + ':00';
+  var nowTime = '1970-01-01 ' + hour + ':' + min + ':00';
+  var isWeekend = (isWorkday && nowTime >= startTime && nowTime <= endTime) ? false : true;
+
+  // if (config.debug) {
+  //   console.log('week:', week);
+  //   console.log('isWorkday:', isWorkday);
+  //   console.log('time:', nowTime, startTime + '/' + endTime);
+  //   console.log('isWeekend:', isWeekend);
+  // }
 
   if (isWeekend) {
     var output = autoreplyMessage.content.replace(/\[workhours\]/g, '[工作日：周' + config.week[autoreplyMessage.start_week] + '到周' + config.week[autoreplyMessage.end_week] + ' ' + autoreplyMessage.start_time + '-' + autoreplyMessage.end_time + ']');
 
-    historyMessage.shift({
+    historyMessage.unshift({
       id: 0,
       senderId: 0, // 系统消息
       receiverId: receiverId,
