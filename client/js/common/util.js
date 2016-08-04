@@ -7,7 +7,7 @@ function clearMessage() {
 }
 
 // 创建聊天模板
-function createMessageTpl(senderId, content, time = '') {
+function createMessageTpl(senderId, content) {
   var userId = window.user.id; // 当前用户
   var className = senderId == userId ? 'sender' : 'receiver';
 
@@ -77,11 +77,12 @@ function loadMessage(data) {
 
     for (var i = data.length - 1; i >= 0; i--) {
       var msg = data[i];
-      var content = (msg.chatType == 1) ? '<img src="' + msg.content + '">' : showEmoji(msg.content); // 图片未处理
+      var content = (msg.chatType == 1) ? '<img src="' + msg.content + '">' : showEmoji(msg.content);
       tpl += createMessageTpl(msg.senderId, content);
     }
 
     var output = createHTML(tpl);
+
     window.historyMessageObj.insertBefore(output, window.historyMessageObj.firstChild);
     window.historyMessageObj.scrollTop += (window.historyMessageObj.scrollHeight - window.originHeight);
     window.originHeight = window.historyMessageObj.scrollHeight;

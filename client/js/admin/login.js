@@ -86,6 +86,9 @@ socket.on('getOnlineUser', function(users) {
     // socket.emit('call', receiver);
     // document.getElementById('msg-' + receiver.id).innerHTML = '';
 
+    // 切换用户
+    // window.historyMessageObj.innerHTML = '';
+    // initMessage();
     // socket.emit('loadMessage', receiver.id);
 
     // 转接用户
