@@ -4,6 +4,7 @@ module.exports = function(socket, patient) {
   console.info(util.now() + '[Call]' + nurseId + '<=>' + patientId);
 
   DB.store.delete(nurseId, patientId);
+  socket.currentPatientId = patientId;
 
   var binding = {
     nurse: {

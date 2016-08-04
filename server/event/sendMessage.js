@@ -116,8 +116,11 @@ module.exports = function(socket, type, receiverId, data) {
             console.log('msg: patient -> nurse');
             DB.store.get(receiverId, senderId, function(unread) {
               if (!unread) {
-                DB.store.add(receiverId, senderId);
-                unread = 1;
+                // 排除患者当前正在对话的秘书
+                if (senderId != io.sockets.connected[conns[receiverId]].currentPatientId) {
+                  DB.store.add(receiverId, senderId);
+                  unread = 1;
+                }
               } else {
                 DB.store.update(receiverId, senderId);
                 unread += 1;
