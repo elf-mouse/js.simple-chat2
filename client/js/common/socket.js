@@ -76,7 +76,7 @@ socket.on('image', function(data) {
  * data.patinet 患者绑定信息
  */
 socket.on('callForwarding', function(data) {
-  console.log('护士' + data.nurse.username + '已将病人' + data.patient.username + '转入您名下');
+  console.log('护士' + data.nurse.id + '已将病人' + data.patientIds + '转入您名下');
 });
 
 export default socket;

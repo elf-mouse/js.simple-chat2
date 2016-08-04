@@ -83,11 +83,13 @@ socket.on('getOnlineUser', function(users) {
     }
 
     // 接待用户
-    socket.emit('call', receiver);
-    document.getElementById('msg-' + receiver.id).innerHTML = '';
+    // socket.emit('call', receiver);
+    // document.getElementById('msg-' + receiver.id).innerHTML = '';
+
+    // socket.emit('loadMessage', receiver.id);
 
     // 转接用户
-    // socket.emit('callForwarding', data.patient[3], data.nurse[0]);
+    // socket.emit('callForwarding', [data.patient[0], data.patient[3]], data.nurse[0]);
 
     console.log('当前聊天对象' + receiver.id + ':' + receiver.name);
   }, false);

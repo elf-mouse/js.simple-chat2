@@ -95,12 +95,12 @@ io.on('connection', function(socket) {
 
   /**
    * 转接
-   * @param  {object} patient 患者信息
+   * @param  {array} patients 患者信息列表
    * @param  {object} nurse   秘书信息
    */
-  socket.on('callForwarding', function(patient, nurse) {
+  socket.on('callForwarding', function(patients, nurse) {
     util.checkAuth(socket, function() {
-      event.callForwarding(socket, patient, nurse);
+      event.callForwarding(socket, patients, nurse);
     });
   });
 
