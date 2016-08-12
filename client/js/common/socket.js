@@ -8,6 +8,10 @@ document.getElementById('status').addEventListener('click', function() {
   socket.emit('status');
 }, false);
 
+socket.on('system', function(data) {
+  console.log(data);
+});
+
 // 连接服务器
 socket.on('connect', function() {
   console.log('connect...');
@@ -38,9 +42,9 @@ socket.on('status', function(data) {
 socket.on('message', function(data) {
   console.info('成功接收消息');
   console.log(data);
-  if (data.unread && document.getElementById('msg-' + data.senderId)) {
-    document.getElementById('msg-' + data.senderId).innerHTML = data.unread;
-  }
+  // if (data.unread && document.getElementById('msg-' + data.senderId)) {
+  //   document.getElementById('msg-' + data.senderId).innerHTML = data.unread;
+  // }
   showMessage(data.senderId, data.message);
 });
 
@@ -70,13 +74,24 @@ socket.on('image', function(data) {
 });
 
 /**
+ * 接待通知
+ *
+ * data.nurseId 绑定秘书ID
+ * data.patinetId 绑定患者ID
+ */
+socket.on('call', function(data) {
+  console.log(data);
+});
+
+/**
  * 转接通知
  *
- * data.nurse 秘书绑定信息
+ * data.fromNurse 秘书A绑定信息
+ * data.toNurse 秘书B绑定信息
  * data.patinet 患者绑定信息
  */
 socket.on('callForwarding', function(data) {
-  console.log('护士' + data.nurse.id + '已将病人' + data.patientIds + '转入您名下');
+  console.log('护士' + data.fromNurse.id + '已将病人' + data.patientIds + '转入' + data.toNurse.id);
 });
 
 export default socket;

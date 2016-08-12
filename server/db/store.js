@@ -31,10 +31,12 @@ module.exports.delete = function(userId, friendId) {
   });
 };
 
-module.exports.update = function(userId, friendId) {
+module.exports.update = function(userId, friendId, callback) {
+  callback = callback || function() {};
   var args = [createKey(userId), 1, friendId];
   client.zincrby(args, function(err, res) {
     if (err) throw err;
+    callback();
   });
 };
 

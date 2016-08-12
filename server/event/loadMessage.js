@@ -1,4 +1,6 @@
 module.exports = function(socket, patientId) {
+  console.info('loadMessage:', socket.currentPatientId, patientId);
+
   // reset loadMessage
   if (socket.currentPatientId != patientId) {
     socket.currentPatientId = patientId;
@@ -8,7 +10,6 @@ module.exports = function(socket, patientId) {
 
   if (socket.canLoad) {
     if (config.debug) {
-      console.info('loadMessage');
       console.log('patientId:' + patientId + ',lastId:' + socket.lastId);
     }
 

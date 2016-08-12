@@ -32,7 +32,7 @@ module.exports = function(socket, patients, nurse) {
       console.log('from nurse binding', socket.binding);
     }
 
-    DB.store.delete(binding.fromNurse.id, binding.patient.id); // 转接口删除未读消息统计
+    DB.store.delete(0, binding.patient.id); // 转接口删除未读消息统计
 
     var patientSocketId = conns[binding.patient.id];
     if (patientSocketId) {
@@ -60,11 +60,10 @@ module.exports = function(socket, patients, nurse) {
     }
   });
 
-  if (nurseSocketId) {
-    // response: 转接通知
-    io.sockets.connected[nurseSocketId].emit('callForwarding', {
-      nurse: binding.fromNurse,
-      patientIds: patientIds
-    });
-  }
+  // response: 转接通知
+  socket.to(config.roles[config.roleType.nurse]).emit('callForwarding', {
+    fromNurse: binding.fromNurse,
+    toNurse: binding.toNurse,
+    patientIds: patientIds
+  });
 };

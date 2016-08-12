@@ -93,7 +93,7 @@ function getOfflineMessageCount(callback) {
 /**
  * 更新离线消息关系链
  */
-function updateOfflineMessage(patientId, nurseId) {
+function updateOfflineMessage(patientId, nurseId, callback) {
   var conditions = { $and: [{ sender_id: patientId }, { receiver_id: 0 }] };
   var update = { $set: { receiver_id: nurseId } };
   var options = { multi: true };
@@ -106,6 +106,7 @@ function updateOfflineMessage(patientId, nurseId) {
       } else {
         console.log('[DB]chat updated');
       }
+      callback();
     });
 }
 

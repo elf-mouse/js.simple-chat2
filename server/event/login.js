@@ -59,9 +59,7 @@ function addUser(socket, user) {
     userIds.push(userId); // new user id
     users[userId] = user; // origin user data
     conns[userId] = socket.id; // client id
-    if (user.type === config.roleType.patient) {
-      offlineMessage[userId] = 0; // 设置离线未读消息数
-    } else {
+    if (user.type === config.roleType.nurse) {
       socket.currentPatientId = 0; // 当前聊天患者ID
     }
 
@@ -79,19 +77,20 @@ function addUser(socket, user) {
     // db select
     if (user.type === config.roleType.nurse) {
       console.log('nurse get message');
-      DB.query.getOfflineMessageCount(function(data) { // 秘书登录后获取全部离线消息统计
-        if (config.debug) {
-          console.log(1, 'offline message', data);
-        }
-        DB.store.getAll(userId, function(res) {
-          var result = data.concat(res).uniqueId();
+      // DB.query.getOfflineMessageCount(function(data) { // 秘书登录后获取全部离线消息统计
+      //   if (config.debug) {
+      //     console.log(1, 'offline message', data);
+      //   }
+        DB.store.getAll(0, function(res) { // 全部未读消息
+          // var result = data.concat(res).uniqueId();
           if (config.debug) {
-            console.log(2, 'unread message', result);
+            console.log(2, 'unread message', res);
           }
+          // console.log(3, 'get message', res);
           // response
-          socket.emit('loginSuccess', result);
+          socket.emit('loginSuccess', res);
         });
-      });
+      // });
     } else {
       console.log('patient get message');
       DB.query.getPatientMessage(userId, null, function(data) { // 患者登录后获取最近几条聊天记录
@@ -104,6 +103,8 @@ function addUser(socket, user) {
             console.log(2, 'autoreply message', res);
           }
           var result = util.appendAutoreply(userId, data, res);
+          // console.log(3, 'get message', result);
+
           // response
           socket.emit('loginSuccess', result);
         });

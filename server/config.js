@@ -1,7 +1,7 @@
 var DEBUG = true;
 
 var CHAT_SERVER = {
-  port: 8080
+  port: 3000
 };
 
 var IMAGE_SERVER = {
@@ -20,7 +20,7 @@ var AUTH = {
 var MONGO = {
   user: '',
   pass: '',
-  host: 'localhost',
+  host: '127.0.0.1',
   port: 27017,
   name: 'test',
   messageCount: 20, // 每次读取消息条数
@@ -35,7 +35,9 @@ var REDIS = {
 };
 
 MONGO.auth = (MONGO.user && MONGO.pass) ? (MONGO.user + ':' + MONGO.pass + '@') : '';
-REDIS.options = {}; // TODO
+REDIS.options = {
+  password: REDIS.password
+};
 
 var PRIMARY_KEY = 'uid';
 
@@ -83,8 +85,17 @@ var SYSTEM = {
     empty: {
       code: 1004,
       msg: '消息不能为空'
+    },
+    format: {
+      code: 1005,
+      msg: '图片格式仅支持png和jpg'
     }
-  }
+  },
+  imageFormat: ['png', 'jpg', 'jpeg']
+};
+
+var REG = {
+  image: /^data:image\/(png|jpe?g);base64,/
 };
 
 var WEEK = {
@@ -110,4 +121,5 @@ module.exports.roleType = ROLE_TYPE;
 module.exports.roles = ROLES;
 module.exports.upload = UPLOAD;
 module.exports.system = SYSTEM;
+module.exports.reg = REG;
 module.exports.week = WEEK;

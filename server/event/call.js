@@ -1,10 +1,8 @@
 module.exports = function(socket, patient) {
   var nurseId = socket[config.pk];
   var patientId = patient.id;
-  console.info(util.now() + '[Call]' + nurseId + '<=>' + patientId);
 
-  DB.store.delete(nurseId, patientId);
-  socket.currentPatientId = patientId;
+  console.info(util.now() + '[Call]' + nurseId + '<=>' + patientId);
 
   var binding = {
     nurse: {
@@ -41,6 +39,12 @@ module.exports = function(socket, patient) {
     }
   }
 
-  offlineMessage[binding.patient.id] = 0; // 重置离线未读消息数
-  DB.query.updateOfflineMessage(binding.patient.id, binding.nurse.id);
+  DB.store.delete(0, binding.patient.id); // 重置离线未读消息数
+  DB.query.updateOfflineMessage(binding.patient.id, binding.nurse.id, function() {
+    // response
+    socket.to(config.roles[config.roleType.nurse]).emit('call', {
+      nurseId: binding.nurse.id,
+      patientId: binding.patient.id
+    });
+  });
 };

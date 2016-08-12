@@ -39,12 +39,12 @@ function getReceiverById(senderId, receiverId) {
   return username;
 }
 
-function saveFile(value, data) {
+function saveFile(value) {
   var date = new Date();
   // path to store uploaded files (NOTE: presumed you have created the folders)
   var filename = date.getTime() + '.png';
 
-  var base64Data = data.replace(/^data:image\/png;base64,/, '');
+  var base64Data = value.content.replace(config.reg.image, '');
   require('fs').writeFile(config.upload.uploadPath + filename, base64Data, 'base64', function(err) {
     if (err) {
       throw err;
@@ -114,15 +114,15 @@ module.exports = function(socket, type, receiverId, data) {
         } else {
           if (senderRole === roleType.patient) { // 患者 -> 秘书 => nurse.unread[patientId]++
             console.log('msg: patient -> nurse');
-            DB.store.get(receiverId, senderId, function(unread) {
+            DB.store.get(0, senderId, function(unread) {
               if (!unread) {
                 // 排除患者当前正在对话的秘书
                 if (senderId != io.sockets.connected[conns[receiverId]].currentPatientId) {
-                  DB.store.add(receiverId, senderId);
+                  DB.store.add(0, senderId);
                   unread = 1;
                 }
               } else {
-                DB.store.update(receiverId, senderId);
+                DB.store.update(0, senderId);
                 unread += 1;
               }
               // response
@@ -134,7 +134,7 @@ module.exports = function(socket, type, receiverId, data) {
             });
           } else { // 秘书 -> 患者 => nurse.unread[patientId] = 0
             console.log('msg: nurse -> patient');
-            DB.store.delete(senderId, receiverId);
+            DB.store.delete(0, receiverId);
             // response
             io.sockets.connected[socketId].emit(type, {
               senderId: senderId,
@@ -147,14 +147,17 @@ module.exports = function(socket, type, receiverId, data) {
         console.log('user is offline');
 
         if (senderRole === roleType.patient) { // 群发
-          offlineMessage[senderId] += 1; // 更新离线未读消息数
-          console.log('OfflineMessage ' + senderId + ':' + offlineMessage[senderId]);
-          // response
-          socket.to(config.roles[roleType.nurse]).emit(type, {
-            groupId: groupId,
-            senderId: senderId,
-            message: data,
-            unread: offlineMessage[senderId]
+          // 更新离线未读消息数
+          DB.store.update(0, senderId, function() {
+            DB.store.get(0, senderId, function(unread) {
+              // response
+              socket.to(config.roles[roleType.nurse]).emit(type, {
+                groupId: groupId,
+                senderId: senderId,
+                message: data,
+                unread: unread
+              });
+            });
           });
         }
       }
@@ -168,10 +171,16 @@ module.exports = function(socket, type, receiverId, data) {
 
       switch (type) {
         case config.chats[chatType.image]: // image
-          console.log(util.now() + '[SendImage]Received image: ' + senderId + ':' + sender + ' to ' + receiverId + ':' + receiver + ' a pic');
-          value.chat_type = chatType.image;
-          // 保持图片至本地
-          saveFile(value, data);
+          var result = config.reg.image.exec(value.content);
+          if (config.system.imageFormat.indexOf(result[1]) > -1) {
+            console.log(util.now() + '[SendImage]Received image: ' + senderId + ':' + sender + ' to ' + receiverId + ':' + receiver + ' a pic');
+            value.chat_type = chatType.image;
+            // 保持图片至本地
+            saveFile(value);
+          } else { // 格式不支持
+            // response
+            socket.emit('system', config.system.message.format);
+          }
           break;
         default: // message
           console.log(util.now() + '[SendMessage]Received message: ' + senderId + ':' + sender + ' to ' + receiverId + ':' + receiver + ' say ' + value.content);
