@@ -172,7 +172,7 @@ module.exports = function(socket, type, receiverId, data) {
       switch (type) {
         case config.chats[chatType.image]: // image
           var result = config.reg.image.exec(value.content);
-          if (config.system.imageFormat.indexOf(result[1]) > -1) {
+          if (result && config.system.imageFormat.indexOf(result[1]) > -1) {
             console.log(util.now() + '[SendImage]Received image: ' + senderId + ':' + sender + ' to ' + receiverId + ':' + receiver + ' a pic');
             value.chat_type = chatType.image;
             // 保持图片至本地
