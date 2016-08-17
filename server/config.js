@@ -34,7 +34,6 @@ var REDIS = {
   port: 6379
 };
 
-MONGO.auth = (MONGO.user && MONGO.pass) ? (MONGO.user + ':' + MONGO.pass + '@') : '';
 REDIS.options = {
   password: REDIS.password
 };
